@@ -12,14 +12,14 @@ A simple chat application for android with a python flask server as the backend.
 * Install mysql and create a non-root user that has access to a single database.
 * Create `serverapp/credentials.py` file with the following content:
 
-    SECRET_KEY = 'type some random secret key here'
+        SECRET_KEY = 'type some random secret key here'
 
-    mysql = {
-      "user": "your-username-for-db-you-have-created",
-      "host": "localhost",
-      "password": "*******",
-      "dbname": "name-of-database"
-    }
+        mysql = {
+          "user": "your-username-for-db-you-have-created",
+          "host": "localhost",
+          "password": "*******",
+          "dbname": "name-of-database"
+        }
 
 * Run `serverapp/app.py` to start the server
 * In `WelcomeActivity` java file, set `url` variable to point to where the server is (port=5000)
