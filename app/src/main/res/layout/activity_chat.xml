@@ -1,0 +1,74 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    tools:context="com.example.saurabh.chat.ChatActivity">
+
+    <ListView
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:transcriptMode="normal"
+        android:focusable="true"
+        android:listSelector="@android:color/transparent"
+        android:divider="@null"
+        android:stackFromBottom="true"
+        android:layout_above="@+id/layout_typing"
+        android:id="@+id/listView_messages" />
+
+    <LinearLayout android:id="@+id/layout_typing"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center_horizontal"
+        android:layout_above="@+id/layout_message_control">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="User array"
+            android:id="@+id/users_typing"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text=" is typing..."
+            android:id="@+id/is_typing" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_width="match_parent"
+        android:id="@+id/layout_message_control"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
+        android:orientation="horizontal">
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:hint="Type a message..."
+            android:ems="10"
+            android:id="@+id/txt_message" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send"
+            android:enabled="false"
+            android:id="@+id/btn_send" />
+
+    </LinearLayout>
+
+</RelativeLayout>
