@@ -1,10 +1,8 @@
 package com.example.saurabh.chat;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -30,45 +28,7 @@ public class MenuActivity extends AppCompatActivity {
     RoomsFragment roomsFragment;
     private CoordinatorLayout coordinatorLayout;
     private FloatingActionButton fab;
-    private SharedPreferences userSharedPreferences;
     private Intent intent;
-
-    private boolean isLoggedIn() {
-        return userSharedPreferences.contains("username") && userSharedPreferences.contains("session");
-    }
-
-    private String getUsername() {
-        if(userSharedPreferences.contains("username")) {
-            // empty default string will never be returned by default
-            return userSharedPreferences.getString("username", "");
-        }
-
-        // if not stored in shared preferences, try to get it from intent
-        // will be null if string is not set
-        return intent.getStringExtra("username");
-    }
-
-    private int getUserID() {
-        if(userSharedPreferences.contains("user_id")) {
-            // empty default int will never be returned by default
-            return userSharedPreferences.getInt("user_id", -1);
-        }
-
-        // if not stored in shared preferences, try to get it from intent
-        // will be null if string is not set
-        return intent.getIntExtra("user_id", -1);
-    }
-
-    private String getSession() {
-        if(userSharedPreferences.contains("session")) {
-            // empty default string will never be returned by default
-            return userSharedPreferences.getString("session", "");
-        }
-
-        // if not stored in shared preferences, try to get it from intent
-        // will be null if string is not set
-        return intent.getStringExtra("session");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +36,11 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         intent = getIntent();
-        userSharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-        username = getUsername();
-        user_id = getUserID();
-        session = getSession();
+
+        ChatApplication chatApplication = (ChatApplication) MenuActivity.this.getApplication();
+        username = chatApplication.getUsername();
+        user_id = chatApplication.getUserID();
+        session = chatApplication.getSession();
 
         roomsFragment = new RoomsFragment();
         Bundle roomsFragmentArguments = new Bundle();
@@ -87,7 +48,6 @@ public class MenuActivity extends AppCompatActivity {
         roomsFragmentArguments.putString("username", username);
         roomsFragmentArguments.putString("session", session);
         roomsFragment.setArguments(roomsFragmentArguments);
-        (new FetchRoomsAsyncTask(roomsFragment, username, user_id, session)).execute();
 
         CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(getSupportFragmentManager(), roomsFragment);
 
@@ -97,7 +57,7 @@ public class MenuActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(mViewPager);
 
-        if(isLoggedIn() && intent.getBooleanExtra("returning user", false)) {
+        if(chatApplication.isLoggedIn() && intent.getBooleanExtra("returning user", false)) {
             coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout_menu);
 
             Snackbar snackbar = Snackbar
@@ -105,7 +65,7 @@ public class MenuActivity extends AppCompatActivity {
                     .setAction("Not " + username + "?", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            new Logout(MenuActivity.this, username, session);
+                            new Logout(MenuActivity.this, user_id, username, session);
                         }
                     });
 
@@ -145,15 +105,14 @@ public class MenuActivity extends AppCompatActivity {
             return true;
         } else if(id == R.id.action_user_profile) {
             Intent userProfileIntent = new Intent(MenuActivity.this, UserProfileActivity.class);
-            userProfileIntent.putExtra("username", username);
-            userProfileIntent.putExtra("session", session);
+            intent.putExtra("username", username);
             startActivity(userProfileIntent);
         } else if(id == R.id.action_create_room) {
             showCreateRoomDialog();
 
             return true;
         } else if(id == R.id.action_logout) {
-            new Logout(MenuActivity.this, username, session);
+            new Logout(MenuActivity.this, user_id, username, session);
             return true;
         }
 
@@ -163,7 +122,7 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
         if (keyCode == KeyEvent.KEYCODE_BACK ) {
-            new Logout(MenuActivity.this, username, session);
+            new Logout(MenuActivity.this, user_id, username, session);
             return true;
         }
 

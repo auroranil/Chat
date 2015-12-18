@@ -203,10 +203,11 @@ def signup():
         user = User(username)
         session = user.register(password)
         if session != None:
-            return json.dumps({"registered": True, "id": user.id, "session": session})
+            return json.dumps({"registered": True, "user_id": user.id, "session": session})
     return json.dumps({"registered": False})
 
 @main.route('/fetchrooms', methods=['POST'])
+@authenticated_only_http
 def fetchrooms():
     global Room
     global User

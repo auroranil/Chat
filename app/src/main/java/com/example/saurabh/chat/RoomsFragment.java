@@ -42,9 +42,6 @@ public class RoomsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
-                intent.putExtra("user_id", user_id);
-                intent.putExtra("username", username);
-                intent.putExtra("session", session);
                 intent.putExtra("room_id", ((RoomAdapter.RoomItem) adapter.getItem(position)).getRoomID());
                 intent.putExtra("room_name", ((RoomAdapter.RoomItem) adapter.getItem(position)).getRoomName());
                 getActivity().startActivity(intent);
@@ -68,5 +65,12 @@ public class RoomsFragment extends Fragment {
                 android.R.color.holo_red_light);
 
         return view;
+    }
+
+    // Fetch rooms when activity is created
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        (new FetchRoomsAsyncTask(this, username, user_id, session)).execute();
     }
 }

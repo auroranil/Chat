@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -54,46 +54,6 @@ public class ChatActivity extends AppCompatActivity {
 
     private JSONObject info;
     private Socket mSocket;
-    {
-        try {
-            mSocket = IO.socket(WelcomeActivity.url);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getUsername() {
-        if(userSharedPreferences.contains("username")) {
-            // empty default string will never be returned by default
-            return userSharedPreferences.getString("username", "");
-        }
-
-        // if not stored in shared preferences, try to get it from intent
-        // will be null if string is not set
-        return intent.getStringExtra("username");
-    }
-
-    private int getUserID() {
-        if(userSharedPreferences.contains("user_id")) {
-            // empty default int will never be returned by default
-            return userSharedPreferences.getInt("user_id", -1);
-        }
-
-        // if not stored in shared preferences, try to get it from intent
-        // will be null if string is not set
-        return intent.getIntExtra("user_id", -1);
-    }
-
-    private String getSession() {
-        if(userSharedPreferences.contains("session")) {
-            // empty default string will never be returned by default
-            return userSharedPreferences.getString("session", "");
-        }
-
-        // if not stored in shared preferences, try to get it from intent
-        // will be null if string is not set
-        return intent.getStringExtra("session");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,9 +62,10 @@ public class ChatActivity extends AppCompatActivity {
 
         userSharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
         intent = getIntent();
-        int user_id = getUserID();
-        String username = getUsername();
-        String session = getSession();
+        ChatApplication chatApplication = (ChatApplication) this.getApplication();
+        int user_id = chatApplication.getUserID();
+        String username = chatApplication.getUsername();
+        String session = chatApplication.getSession();
         String room_name = intent.getStringExtra("room_name");
         // TODO: deal with default value
         room_id = intent.getIntExtra("room_id", -1);
@@ -113,6 +74,12 @@ public class ChatActivity extends AppCompatActivity {
 
         if(actionBar != null) {
             actionBar.setTitle("Room: " + room_name);
+        }
+
+        try {
+            mSocket = IO.socket(((ChatApplication) getApplication()).url);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
 
         mSocket.connect();

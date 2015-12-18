@@ -38,7 +38,7 @@ public class FetchRoomsAsyncTask extends AsyncTask<String, String, ArrayList<Roo
         }
 
         JSONParser jsonParser = new JSONParser();
-        JSONObject outputJSON = jsonParser.getJSONFromUrl(WelcomeActivity.url + "/fetchrooms", jsonObject);
+        JSONObject outputJSON = jsonParser.getJSONFromUrl(((ChatApplication) roomsFragment.getActivity().getApplication()).url + "/fetchrooms", jsonObject);
         if(outputJSON == null) return null;
         ArrayList<RoomAdapter.RoomItem> rooms;
         try {

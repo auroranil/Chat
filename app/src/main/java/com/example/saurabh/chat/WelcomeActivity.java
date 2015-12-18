@@ -1,8 +1,6 @@
 package com.example.saurabh.chat;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,9 +8,6 @@ import android.widget.Button;
 
 
 public class WelcomeActivity extends AppCompatActivity {
-
-    public static final String url = "http://10.0.0.43:5000";
-    private SharedPreferences userSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +30,7 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         });
 
-        userSharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-        if(userSharedPreferences.contains("username") && userSharedPreferences.contains("session")) {
+        if(((ChatApplication) this.getApplication()).isLoggedIn()) {
             Intent chatIntent = new Intent(WelcomeActivity.this, MenuActivity.class);
             chatIntent.putExtra("returning user", true);
             startActivity(chatIntent);

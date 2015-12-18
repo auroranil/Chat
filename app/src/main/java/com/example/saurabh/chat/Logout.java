@@ -2,10 +2,8 @@ package com.example.saurabh.chat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -13,11 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Logout {
-    private static final int USERNAME = 0, SESSION = 1, URL = 2;
-
     Activity activity;
 
-    public Logout(final Activity activity, final String username, final String session) {
+    public Logout(final Activity activity, final int user_id, final String username, final String session) {
         this.activity = activity;
         AlertDialog.Builder logoutConfirmAlertDialogBuilder = new AlertDialog.Builder(activity)
                 .setTitle("Log out?")
@@ -26,7 +22,7 @@ public class Logout {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // log out here
-                        (new LogoutAsyncTask()).execute(username, session, WelcomeActivity.url + "/logout");
+                        (new LogoutAsyncTask(user_id, username, session, ((ChatApplication) activity.getApplication()).url + "/logout")).execute();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -40,18 +36,29 @@ public class Logout {
     }
 
     public class LogoutAsyncTask extends AsyncTask<String, String, JSONObject> {
+        private int user_id;
+        private String username, session, url;
+
+        public LogoutAsyncTask(int user_id, String username, String session, String url) {
+            this.user_id = user_id;
+            this.username = username;
+            this.session = session;
+            this.url = url;
+        }
+
         @Override
         protected JSONObject doInBackground(String... args) {
             JSONObject inputJson = new JSONObject();
             try {
-                inputJson.put("username", args[USERNAME]);
-                inputJson.put("session", args[SESSION]);
+                inputJson.put("user_id", user_id);
+                inputJson.put("username", username);
+                inputJson.put("session", session);
             } catch(JSONException e) {
                 e.printStackTrace();
             }
 
             JSONParser jParser = new JSONParser();
-            return jParser.getJSONFromUrl(args[URL], inputJson);
+            return jParser.getJSONFromUrl(url, inputJson);
         }
 
         @Override
@@ -71,9 +78,8 @@ public class Logout {
                 Log.i("User", "Failed to logout user from server. Removing shared preferences and restarting application anyway.");
             }
 
-            SharedPreferences sharedPreferences = activity.getSharedPreferences("user", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.remove("username").remove("session").apply();
+            // forget credentials if they are stored in SharedPreferences
+            ((ChatApplication) activity.getApplication()).forgetCredentials();
 
             // Restart application
             Intent i = activity.getBaseContext().getPackageManager()

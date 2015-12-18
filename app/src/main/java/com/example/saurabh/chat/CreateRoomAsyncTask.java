@@ -38,7 +38,7 @@ public class CreateRoomAsyncTask extends AsyncTask<String, String, JSONObject> {
         }
 
         JSONParser jsonParser = new JSONParser();
-        return jsonParser.getJSONFromUrl(WelcomeActivity.url + "/createroom", jsonObject);
+        return jsonParser.getJSONFromUrl(((ChatApplication) activity.getApplication()).url + "/createroom", jsonObject);
     }
 
     @Override
@@ -50,11 +50,8 @@ public class CreateRoomAsyncTask extends AsyncTask<String, String, JSONObject> {
 
         try {
             if(jsonObject.getBoolean("created") && jsonObject.has("room_id")) {
-                room_id = jsonObject.getInt("created");
+                room_id = jsonObject.getInt("room_id");
                 Intent intent = new Intent(activity, ChatActivity.class);
-                intent.putExtra("username", username);
-                intent.putExtra("user_id", user_id);
-                intent.putExtra("session", session);
                 intent.putExtra("room_name", room_name);
                 intent.putExtra("room_id", room_id);
                 activity.startActivity(intent);

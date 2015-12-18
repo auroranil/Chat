@@ -1,8 +1,6 @@
 package com.example.saurabh.chat;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -65,7 +63,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
             JSONParser jsonParser = new JSONParser();
-            JSONObject output_json = jsonParser.getJSONFromUrl(WelcomeActivity.url + "/signup", input_json);
+            JSONObject output_json = jsonParser.getJSONFromUrl(((ChatApplication) getApplication()).url + "/signup", input_json);
             Log.i("login", "output_json");
 
             return output_json;
@@ -102,20 +100,13 @@ public class SignUpActivity extends AppCompatActivity {
                 return;
             }
 
-            if(rememberMe) {
-                SharedPreferences sharedPreferences =
-                        getSharedPreferences("user", Context.MODE_PRIVATE);
+            ((ChatApplication) SignUpActivity.this.getApplication()).setCredentials(user_id, username, session);
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("user_id", user_id)
-                        .putString("username", username)
-                        .putString("session", session).apply();
+            if(rememberMe) {
+                ((ChatApplication) SignUpActivity.this.getApplication()).rememberCredentials();
             }
 
             Intent menuIntent = new Intent(SignUpActivity.this, MenuActivity.class);
-            menuIntent.putExtra("user_id", user_id);
-            menuIntent.putExtra("username", username);
-            menuIntent.putExtra("session", session);
             startActivity(menuIntent);
         }
     }
