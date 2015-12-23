@@ -88,7 +88,7 @@ def createroom():
     data = json.loads(request.data)
     
     if data is not None:
-        global Room, User, db
+        global Room, User
         print "%r is creating room '%r'" % (data.get("username"), data.get("room_name"))
         try:
             room = Room(data.get('room_name'), data.get("user_id"))

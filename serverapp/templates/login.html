@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block title %}Login to Chat{% endblock %}
 {% block body %}
-<form action="/login">
+<form action="/login" method="POST">
     <label>Username:</label>
     <input name="username" type="text" />
     <br />

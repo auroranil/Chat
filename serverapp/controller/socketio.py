@@ -4,8 +4,6 @@ from model import *
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, disconnect
 
 import functools
-
-users_typing = []
  
 def authenticated_only_socketio(f):
     @functools.wraps(f)
@@ -83,7 +81,6 @@ def fetch_messages(data):
 @socketio.on('typing')
 @authenticated_only_socketio
 def started_typing(data):
-    users_typing.append(data.get('username'))
     emit("typing", data.get('username'), room="room" + str(data.get('room_id')), include_self=False)
 
 @socketio.on('stop typing')
@@ -93,7 +90,6 @@ def stopped_typing(data):
     
 def stopped_typing_handler(username, room_id):
     if username in users_typing:
-        users_typing.remove(username)
         emit("stop typing", username, room="room" + str(room_id), include_self=False)
 
 @socketio.on('send message')
@@ -101,9 +97,7 @@ def stopped_typing_handler(username, room_id):
 def handle_sent_message(data):
     print('received message: ' + str(data))
     
-    global User
-    global Message
-    global Room
+    global User, Message, Room
     message = Message(data.get('user_id'), data.get('message'), data.get('type'), data.get('room_id'))
     message.commit()
     data["datetimeutc"] = str(message.date)
