@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <header>
+            <h1>Chat</h1>
+            <nav>
+                <ul>
+                    <li class="first"><a href="/">Home</a></li>
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="https://github.com/jos0003/Chat" target="blank">Fork on Github</a></li>
+                </ul>
+            </nav>
+        </header>
+        <article>
+            {% block body %}{% endblock %}
+        </article>
+        <footer>Copyright 2015 with <a href="https://github.com/jos0003/Chat/blob/master/LICENSE.md">BSD license</a>.</footer>
+    </body>
+</html>

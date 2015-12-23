@@ -1,8 +1,8 @@
-from app import main
+from app import main, app
 from model import *
 
 import sqlalchemy
-from flask import request
+from flask import request, render_template
 
 import functools
 import json
@@ -23,23 +23,30 @@ def authenticated_only_http(f):
         return f(*args, **kwargs)
     
     return wrapped
-    
-## The password is checked here
-@main.route('/login', methods=['POST'])
-def login():
-    print "Someone is logging in..."
-    auth = json.loads(request.data)
 
-    if auth is not None:
-        username, password = auth['username'], auth['password']
-        user = User.query.filter_by(username=username).first()
-        if user is not None:
-            session = user.authenticate(password, UserSession)
-            if session != None:
-                return json.dumps({"authenticated": True, "user_id": user.id, "session": session})
-            return json.dumps({"authenticated": False, "reason": "Either session is invalid or session has expired."})
-        return json.dumps({"authenticated": False, "reason": "Username does not exist."})
-    return json.dumps({"authenticated": False, "reason": "Failed to collect credentials."})
+@main.route('/', methods=['GET'])
+def welcome():
+    return render_template('welcome.html')
+        
+## The password is checked here
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        print "Someone is logging in..."
+        auth = json.loads(request.data)
+
+        if auth is not None:
+            username, password = auth['username'], auth['password']
+            user = User.query.filter_by(username=username).first()
+            if user is not None:
+                session = user.authenticate(password, UserSession)
+                if session != None:
+                    return json.dumps({"authenticated": True, "user_id": user.id, "session": session})
+                return json.dumps({"authenticated": False, "reason": "Either session is invalid or session has expired."})
+            return json.dumps({"authenticated": False, "reason": "Username does not exist."})
+        return json.dumps({"authenticated": False, "reason": "Failed to collect credentials."})
     
 @main.route('/signup', methods=['POST'])
 def signup():
@@ -109,3 +116,7 @@ def logout():
                 user.remove_session(session, UserSession)
                 return json.dumps({"logged out": True})
     return json.dumps({"logged out": False})
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404

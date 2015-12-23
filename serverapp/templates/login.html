@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %}Login to Chat{% endblock %}
+{% block body %}
+<form action="/login">
+    <label>Username:</label>
+    <input name="username" type="text" />
+    <br />
+    <label>Password: </label>
+    <input name="password" type="password" />
+    <br />
+    <input type="submit" value="Login" />
+</form>
+{% endblock %}
