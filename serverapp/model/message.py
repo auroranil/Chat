@@ -25,3 +25,7 @@ class Message(db.Model):
         
     def __repr__(self):
         return '<Message(user_id=%r, message=%s, type=%r, other_id=%r)>' % (self.user_id, self.message, self.type, self.other_id)
+        
+    def commit(self):
+        db.session.add(self)
+        db.session.commit()

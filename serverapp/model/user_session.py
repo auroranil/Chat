@@ -17,3 +17,7 @@ class UserSession(db.Model):
         
     def __repr__(self):
         return '<UserSession(user_id=%r, hash=%s)>' % (self.user_id, self.hash)
+    
+    def commit(self):
+        db.session.add(self)
+        db.session.commit()

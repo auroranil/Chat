@@ -28,8 +28,7 @@ class User(db.Model):
     
     def generate_session(self, UserSession):
         session = UserSession(self.id)
-        db.session.add(session)
-        db.session.commit()
+        session.commit()
         return session.hash
     
     @classmethod
