@@ -2,7 +2,6 @@
 A simple chat application for android with a python flask server as the backend.
 
 ## Setup
-* Using android studio, clone this git repository.
 * Run these commands to clone the repository and get the Chat server up and running
 
         # cd to the directory where you want the Chat directory to be,
