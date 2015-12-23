@@ -9,18 +9,13 @@ A simple chat application for android with a python flask server as the backend.
         # then run these commands
         git clone https://github.com/jos0003/Chat.git
         cd Chat
+        
+        # Install these dependencies
         sudo apt-get install sqlite pip
         sudo pip install flask flask-bcrypt flask-socketio sqlalchemy flask-sqlalchemy
-        nano server_app/config.py
-        python server_app
-
- * `server_app/config.py` should have the following content:
-
-          SECRET_KEY = 'type some random secret key here'
-
-          # The port to run the server on
-          # 0.0.0.0:<port>
-          port = 5000
+        
+        # Run server on port 5000 as specified in the first argument
+        python server_app 5000
 * Open gradle project in either Android Studio or Eclipse with the gradle plugin.
 * In `ChatApplication.java` file, set `url` variable to point to where the server is.
 * Install android application on your phone and run the app.
