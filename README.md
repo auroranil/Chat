@@ -10,7 +10,7 @@ A simple chat application for android with a python flask server as the backend.
  * sqlalchemy
  * flask-sqlalchemy
 * Install mysql and create a non-root user that has access to a single database.
-* Create `serverapp/config.py` file with the following content:
+* Create `server_app/config.py` file with the following content:
 
         SECRET_KEY = 'type some random secret key here'
 
@@ -21,9 +21,9 @@ A simple chat application for android with a python flask server as the backend.
           "dbname": "name-of-database"
         }
 
-	# The port to run the server on
-	# 0.0.0.0:<port>
-	port = 5000
+        # The port to run the server on
+        # 0.0.0.0:<port>
+        port = 5000
 
 * Run `python /path/to/Chat/server_app` to start the server
 * In `ChatApplication.java` file, set `url` variable to point to where the server is
