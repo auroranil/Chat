@@ -1,8 +1,8 @@
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-serverapp/credentials.py
+/android_app/.gradle
+/android_app/local.properties
+/android_app/.idea/workspace.xml
+/android_app/.idea/libraries
+/android_app/.DS_Store
+/android_app/build
+serverapp/config.py
 *.pyc

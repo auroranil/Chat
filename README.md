@@ -25,7 +25,7 @@ A simple chat application for android with a python flask server as the backend.
 	# 0.0.0.0:<port>
 	port = 5000
 
-* Run `python /path/to/Chat/serverapp` to start the server
+* Run `python /path/to/Chat/server_app` to start the server
 * In `ChatApplication.java` file, set `url` variable to point to where the server is
 * Install android application on your phone and run the app.
 
