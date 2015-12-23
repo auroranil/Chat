@@ -4,5 +4,6 @@
 /android_app/.idea/libraries
 /android_app/.DS_Store
 /android_app/build
-serverapp/config.py
+/serverapp/config.py
+*.db
 *.pyc

@@ -12,7 +12,7 @@ main = Blueprint('main', __name__)
 # configuration
 import config
 app.config['SECRET_KEY'] = config.SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://{}:{}@{}/{}'.format(config.mysql["user"], config.mysql["password"], config.mysql["host"], config.mysql["dbname"])
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Chat.db'
 app.config['PORT'] = config.port
 
 db = SQLAlchemy(app)

@@ -94,10 +94,8 @@ def createroom():
             room = Room(data.get('room_name'), data.get("user_id"))
             room.commit()
         except sqlalchemy.exc.IntegrityError as e:
-            code, msg = e.orig
+            # code, msg = e.orig
             c = {"created": False}
-            if code == 1062:
-                c["error"] = "Room already exists."
             return c
         return json.dumps({"created": True, "room_id": room.id})
     return json.dumps({"created": False})

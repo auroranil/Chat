@@ -86,11 +86,10 @@ def started_typing(data):
 @socketio.on('stop typing')
 @authenticated_only_socketio
 def stopped_typing(data):
-    stopped_typing.handler(data.get("username"), data.get("room_id"))
+    stopped_typing_handler(data.get("username"), data.get("room_id"))
     
 def stopped_typing_handler(username, room_id):
-    if username in users_typing:
-        emit("stop typing", username, room="room" + str(room_id), include_self=False)
+    emit("stop typing", username, room="room" + str(room_id), include_self=False)
 
 @socketio.on('send message')
 @authenticated_only_socketio

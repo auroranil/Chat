@@ -3,31 +3,36 @@ A simple chat application for android with a python flask server as the backend.
 
 ## Setup
 * Using android studio, clone this git repository.
-* Install these following dependencies via `sudo pip install <pip-package>`
+* Run these commands to clone the repository and get the Chat server up and running
+
+        # cd to the directory where you want the Chat directory to be,
+        # then run these commands
+        git clone https://github.com/jos0003/Chat.git
+        cd Chat
+        sudo apt-get install sqlite pip
+        sudo pip install flask flask-bcrypt flask-socketio sqlalchemy flask-sqlalchemy
+        nano server_app/config.py
+        python server_app
+
+ * `server_app/config.py` should have the following content:
+
+            SECRET_KEY = 'type some random secret key here'
+
+            # The port to run the server on
+            # 0.0.0.0:<port>
+            port = 5000
+* Open gradle project in either Android Studio or Eclipse with the gradle plugin.
+* In `ChatApplication.java` file, set `url` variable to point to where the server is.
+* Install android application on your phone and run the app.
+
+## Dependencies
+* pip packages
  * flask
  * flask-bcrypt
  * flask-socketio
  * sqlalchemy
  * flask-sqlalchemy
-* Install mysql and create a non-root user that has access to a single database.
-* Create `server_app/config.py` file with the following content:
-
-        SECRET_KEY = 'type some random secret key here'
-
-        mysql = {
-          "user": "your-username-for-db-you-have-created",
-          "host": "localhost",
-          "password": "*******",
-          "dbname": "name-of-database"
-        }
-
-        # The port to run the server on
-        # 0.0.0.0:<port>
-        port = 5000
-
-* Run `python /path/to/Chat/server_app` to start the server
-* In `ChatApplication.java` file, set `url` variable to point to where the server is
-* Install android application on your phone and run the app.
+* sqlite for portable database (easier to setup than mysql)
 
 ## ALWAYS TODO:
 * Refactor code
