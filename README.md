@@ -15,7 +15,7 @@ A simple chat application for android with a python flask server as the backend.
         
         # Run server on port 5000 as specified in the first argument
         python server_app 5000
-* Open gradle project in either Android Studio or Eclipse with the gradle plugin.
+* Open `android_app` gradle project in either Android Studio or Eclipse with the gradle plugin.
 * In `ChatApplication.java` file, set `url` variable to point to where the server is.
 * Install android application on your phone and run the app.
 
