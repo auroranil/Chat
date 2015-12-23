@@ -13,6 +13,8 @@ main = Blueprint('main', __name__)
 # import config
 # app.config['SECRET_KEY'] = config.SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Chat.db'
+# Disable track modifications to suppress warning
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['PORT'] = config.port
 
 db = SQLAlchemy(app)
