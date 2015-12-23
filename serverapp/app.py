@@ -9,10 +9,11 @@ from flask import Flask
 app = Flask(__name__)
 main = Blueprint('main', __name__)
 
-# credentials
-import credentials
-app.config['SECRET_KEY'] = credentials.SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://{}:{}@{}/{}'.format(credentials.mysql["user"], credentials.mysql["password"], credentials.mysql["host"], credentials.mysql["dbname"])
+# configuration
+import config
+app.config['SECRET_KEY'] = config.SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://{}:{}@{}/{}'.format(config.mysql["user"], config.mysql["password"], config.mysql["host"], config.mysql["dbname"])
+app.config['PORT'] = config.port
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
