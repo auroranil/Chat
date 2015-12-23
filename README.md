@@ -10,7 +10,7 @@ A simple chat application for android with a python flask server as the backend.
         cd Chat
         
         # Install these dependencies
-        sudo apt-get install sqlite pip
+        sudo apt-get install sqlite python-pip
         sudo pip install flask flask-bcrypt flask-socketio sqlalchemy flask-sqlalchemy
         
         # Run server on port 5000 as specified in the first argument
