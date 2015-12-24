@@ -11,7 +11,7 @@ A simple chat application for android with a python flask server as the backend.
         
         # Install these dependencies
         sudo apt-get install sqlite python-pip
-        sudo pip install flask flask-bcrypt flask-socketio sqlalchemy flask-sqlalchemy
+        sudo pip install flask bcrypt flask-bcrypt flask-socketio sqlalchemy flask-sqlalchemy
         
         # Run server on port 5000 as specified in the first argument
         python server_app 5000
@@ -26,6 +26,7 @@ A simple chat application for android with a python flask server as the backend.
  * flask-socketio
  * sqlalchemy
  * flask-sqlalchemy
+* bcrypt (flask-bcrypt needs this)
 * sqlite for portable database (easier to setup than mysql)
 
 ## ALWAYS TODO:
