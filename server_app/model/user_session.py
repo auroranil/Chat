@@ -1,7 +1,8 @@
 from app import db
 
+from os import urandom
+from base64 import b64encode
 import datetime
-import uuid
 
 class UserSession(db.Model):
     __tablename__ = 'user_sessions'
@@ -13,7 +14,7 @@ class UserSession(db.Model):
     
     def __init__(self, user_id):
         self.user_id = user_id
-        self.hash = str(uuid.uuid4().get_hex())
+        self.hash = b64encode(urandom(24)).decode('utf-8')
         
     def __repr__(self):
         return '<UserSession(user_id=%r, hash=%s)>' % (self.user_id, self.hash)
