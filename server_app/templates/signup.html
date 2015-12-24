@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}Sign up - Chat{% endblock %}
+{% block body %}
+<h3>Sign up to Chat</h3>
+<form action="/signup" method="POST">
+    <label>Username:</label>
+    <input name="username" type="text" />
+    <br />
+    <label>Password: </label>
+    <input name="password" type="password" />
+    <br />
+    <label>Remember me:</label>
+    <input name="remember_me" type="checkbox" />
+    <br />
+    <input type="submit" value="Sign up" />
+</form>
+{% endblock %}

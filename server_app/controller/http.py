@@ -48,18 +48,21 @@ def login():
             return json.dumps({"authenticated": False, "reason": "Username does not exist."})
         return json.dumps({"authenticated": False, "reason": "Failed to collect credentials."})
     
-@main.route('/signup', methods=['POST'])
+@main.route('/signup', methods=['GET', 'POST'])
 def signup():
-    print "Someone is signing up..."
-    cred = json.loads(request.data)
-    
-    if cred is not None:
-        username, password = cred['username'], cred['password']
-        user = User(username)
-        session = user.register(password, UserSession)
-        if session != None:
-            return json.dumps({"registered": True, "user_id": user.id, "session": session})
-    return json.dumps({"registered": False})
+    if request.method == 'GET':
+        return render_template('signup.html')
+    elif request.method == 'POST':
+        print "Someone is signing up..."
+        cred = json.loads(request.data)
+        
+        if cred is not None:
+            username, password = cred['username'], cred['password']
+            user = User(username)
+            session = user.register(password, UserSession)
+            if session != None:
+                return json.dumps({"registered": True, "user_id": user.id, "session": session})
+        return json.dumps({"registered": False})
 
 @main.route('/fetchrooms', methods=['POST'])
 @authenticated_only_http
