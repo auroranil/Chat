@@ -22,7 +22,7 @@ public class Logout {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // log out here
-                        (new LogoutAsyncTask(user_id, username, session, ((ChatApplication) activity.getApplication()).url + "/logout")).execute();
+                        (new LogoutAsyncTask(user_id, username, session, ((ChatApplication) activity.getApplication()).getURL() + "/logout")).execute();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

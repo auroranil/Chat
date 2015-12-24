@@ -24,15 +24,19 @@ def authenticated_only_http(f):
     
     return wrapped
 
+def render_template_custom(path,**kwargs):
+    return render_template(path, session=request.cookies.get("session"), **kwargs)
+
 @main.route('/', methods=['GET'])
 def welcome():
-    return render_template('welcome.html')
+    print request.cookies
+    return render_template_custom('welcome.html')
         
 ## The password is checked here
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template_custom('login.html')
     elif request.method == 'POST':
         print "Someone is logging in..."
         print request.data
@@ -52,7 +56,7 @@ def login():
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET':
-        return render_template('signup.html')
+        return render_template_custom('signup.html')
     elif request.method == 'POST':
         print "Someone is signing up..."
         cred = json.loads(request.data)
@@ -121,4 +125,4 @@ def logout():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template_custom('404.html'), 404

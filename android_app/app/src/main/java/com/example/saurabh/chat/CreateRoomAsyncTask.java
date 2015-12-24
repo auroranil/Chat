@@ -8,9 +8,6 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by saurabh on 1/12/15.
- */
 public class CreateRoomAsyncTask extends AsyncTask<String, String, JSONObject> {
     private Activity activity;
     private String username, session, room_name;
@@ -38,7 +35,7 @@ public class CreateRoomAsyncTask extends AsyncTask<String, String, JSONObject> {
         }
 
         JSONParser jsonParser = new JSONParser();
-        return jsonParser.getJSONFromUrl(((ChatApplication) activity.getApplication()).url + "/createroom", jsonObject);
+        return jsonParser.getJSONFromUrl(((ChatApplication) activity.getApplication()).getURL() + "/createroom", jsonObject);
     }
 
     @Override

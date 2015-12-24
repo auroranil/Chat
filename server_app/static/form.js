@@ -16,7 +16,8 @@ $(function() {
         return o;
     };
 
-    $("form").submit(function (e) {        
+    $("form").submit(function (e) {
+        var that = this;    
         var formData = $(this).serializeObject();
         
         $.ajax({
@@ -26,7 +27,15 @@ $(function() {
             dataType : 'json',
             data: JSON.stringify(formData),
             success: function(data) {
-                console.log(data);
+                console.log($(that).attr('id'));
+                switch($(that).attr('id')) {
+                    case "form_login":
+                        document.cookie = "session=" +  data["session"] + "; path=/";
+                        window.location.href = "/";
+                        break;
+                    default:
+                        console.log(data);
+                }
             }
         });
         

@@ -33,9 +33,15 @@
                             <ul class="nav navbar-nav">
                                 {% for href, id, caption, is_on_right, class in navigation_bar if not is_on_right %}<li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{% if class != "" %}<span class="{{ class }}"> {% endif %}{{ caption|e }}{% if class != "" %}</span>{% endif %}</a></li>{% endfor %}
                             </ul>
+                            {% if not session %}
                             <ul class="nav navbar-nav navbar-right">
                                 {% for href, id, caption, is_on_right, class in navigation_bar if is_on_right %}<li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{% if class != "" %}<span class="{{ class }}"> {% endif %}{{ caption|e }}{% if class != "" %}</span>{% endif %}</a></li>{% endfor %}
                             </ul>
+                            {% else %}
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="/logout">Log out</a></li>
+                            </ul>
+                            {% endif %}
                         </div>
                     </div>
                 </nav>

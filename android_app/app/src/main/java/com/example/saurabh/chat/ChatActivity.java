@@ -77,7 +77,7 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         try {
-            mSocket = IO.socket(((ChatApplication) getApplication()).url);
+            mSocket = IO.socket(((ChatApplication) getApplication()).getURL());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
