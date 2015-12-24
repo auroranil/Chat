@@ -7,29 +7,7 @@ header h1 {
     text-align: center;
 }
 
-nav {
-    background: #f9f9f9;
-    border-top: 1px solid #cccccc;
-    border-bottom: 1px solid #cccccc;
-    text-align: center;
-}
 
-nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-nav ul li {
-    display: inline-block;
-    text-align:center;
-    padding: 1em;
-    border-right: 1px solid #cccccc;
-}
-
-nav ul .first {
-    border-left: 1px solid #cccccc;
-}
 
 article {
     margin: 1em 0;

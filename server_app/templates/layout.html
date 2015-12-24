@@ -1,3 +1,11 @@
+{% set navigation_bar = [
+    ('/', 'home', 'Home', False, ""),
+    ('https://github.com/jos0003/Chat', 'github', 'Fork on Github', False, ""),
+    ('/login', 'login', 'Login', True, "glyphicon glyphicon-log-in"),
+    ('/signup', 'signup', 'Sign Up', True, "glyphicon glyphicon-user")
+] -%}
+{% set active_page = active_page|default('home') -%}
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -11,18 +19,29 @@
     <body>
         <header>
             <h1>Chat</h1>
-            <nav>
-                <ul>
-                    <li class="first"><a href="/">Home</a></li>
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/signup">Sign up</a></li>
-                    <li><a href="https://github.com/jos0003/Chat" target="blank">Fork on Github</a></li>
-                </ul>
-            </nav>
+                <nav class="navbar navbar-default">
+                    <div class="container-fluid">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav_bar">
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>                        
+                                </button>
+                            </div>
+                        <div class="collapse navbar-collapse" id="nav_bar">
+                            <ul class="nav navbar-nav">
+                                {% for href, id, caption, is_on_right, class in navigation_bar if not is_on_right %}<li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{% if class != "" %}<span class="{{ class }}"> {% endif %}{{ caption|e }}{% if class != "" %}</span>{% endif %}</a></li>{% endfor %}
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                {% for href, id, caption, is_on_right, class in navigation_bar if is_on_right %}<li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{% if class != "" %}<span class="{{ class }}"> {% endif %}{{ caption|e }}{% if class != "" %}</span>{% endif %}</a></li>{% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
         </header>
         <article class="container">
             {% block body %}{% endblock %}
         </article>
-        <footer>Copyright 2015 with <a href="https://github.com/jos0003/Chat/blob/master/LICENSE.md">BSD license</a>.</footer>
+        <footer class="container-fluid">Copyright 2015 with <a href="https://github.com/jos0003/Chat/blob/master/LICENSE.md">BSD license</a>.</footer>
     </body>
 </html>
