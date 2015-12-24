@@ -16,6 +16,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Chat.db'
 # Disable track modifications to suppress warning
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['PORT'] = config.port
+app.debug = True
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)

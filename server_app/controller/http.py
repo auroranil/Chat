@@ -35,6 +35,7 @@ def login():
         return render_template('login.html')
     elif request.method == 'POST':
         print "Someone is logging in..."
+        print request.data
         auth = json.loads(request.data)
 
         if auth is not None:
