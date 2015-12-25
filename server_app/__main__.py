@@ -3,7 +3,7 @@ from app import app, db, main, socketio
 db.create_all()
 app.register_blueprint(main)
 
-port = 5000
+port = app.config['PORT']
 if len(sys.argv) == 2:
     port = int(sys.argv[1])
 
