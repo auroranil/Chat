@@ -29,7 +29,7 @@ except ImportError as e:
     config_file.close()
     
     # set chmod permissions
-    os.chmod('config.py', 0600)
+    os.chmod(os.path.join(sys.path[0], 'config.py'), 0600)
     
     import config
     config.configure(app)
