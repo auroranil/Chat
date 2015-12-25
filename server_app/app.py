@@ -1,22 +1,35 @@
+import os
+import sys
+
 import flask
-from flask import Blueprint
+from flask import Flask, Blueprint
 
 from flask_socketio import SocketIO
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from flask import Flask
 app = Flask(__name__)
 main = Blueprint('main', __name__)
 
 # configuration
-# import config
-# app.config['SECRET_KEY'] = config.SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Chat.db'
-# Disable track modifications to suppress warning
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# app.config['PORT'] = config.port
-app.debug = True
+try:
+    import config
+    config.configure(app)
+except ImportError as e:
+    # If config.py doesn't exist, create one
+    config_file = open(os.path.join(sys.path[0], 'config.py'), 'w')
+    config_file.write("def configure(app):\n")
+    config_file.write("    app.config['SECRET_KEY'] = %r\n" % os.urandom(24))
+    config_file.write("    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Chat.db'\n")
+    config_file.write("    # Disable track modifications to suppress warning\n")
+    config_file.write("    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False\n")
+    config_file.write("    # If port is not set in the second argument, set default port in the variable below.\n")
+    config_file.write("    app.config['PORT'] = 5000\n")
+    config_file.write("    app.debug = True\n")
+    config_file.close()
+    
+    import config
+    config.configure(app)
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
