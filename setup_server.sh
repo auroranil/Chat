@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Delete the script itself
+rm -- "$0"
+
 git clone https://github.com/jos0003/Chat.git
 cd Chat
 
