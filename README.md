@@ -3,7 +3,9 @@ A simple chat application for android with a python flask server as the backend.
 
 ## Setup
 * Run this command to clone the repository and get the Chat server up and running.
+        
         wget https://raw.githubusercontent.com/jos0003/Chat/master/setup_server.sh && chmod +x ./setup_server.sh && ./setup_server.sh
+        
 * Open `android_app` gradle project in either Android Studio or Eclipse with the gradle plugin.
 * Install android application on your phone and run the app.
 
