@@ -62,7 +62,7 @@ public class MenuActivity extends AppCompatActivity {
 
             Snackbar snackbar = Snackbar
                     .make(coordinatorLayout, "Signed in as " + username, Snackbar.LENGTH_LONG)
-                    .setAction("Not " + username + "?", new View.OnClickListener() {
+                    .setAction("Not you?", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             new Logout(MenuActivity.this, user_id, username, session);

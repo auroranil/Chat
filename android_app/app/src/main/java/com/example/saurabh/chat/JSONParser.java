@@ -42,7 +42,6 @@ public class JSONParser {
             httpPost.setHeader("Accept", "application/json");
 
             if(jsonObject != null) {
-                Log.i("http", "setting json parameter");
                 httpPost.setHeader("Content-type", "application/json");
                 httpPost.setEntity(new StringEntity(jsonObject.toString(), "UTF-8"));
             }
@@ -73,7 +72,6 @@ public class JSONParser {
             }
             is.close();
             json = sb.toString();
-            Log.i("json", json);
         } catch (Exception e) {
             Log.e("Buffer Error", "Error converting result " + e.toString());
         }
@@ -87,6 +85,5 @@ public class JSONParser {
 
         // return JSON String
         return jObj;
-
     }
 }

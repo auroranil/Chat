@@ -9,11 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimeZone;
 
 class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
@@ -84,14 +81,9 @@ class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener
         roomViewHolder.roomNameText.setText(roomItem.getRoomName());
         roomViewHolder.usernameText.setText(roomItem.getUsername());
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date d;
-        try {
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            d = df.parse(roomItem.getDate());
-            roomViewHolder.timeAgoText.setText(Utility.getTimeAgo(d.getTime()));
-        } catch(ParseException e) {
-            e.printStackTrace();
+        Date roomCreatedDate = Utility.parseDateAsUTC(roomItem.getDate());
+        if(roomCreatedDate != null) {
+            roomViewHolder.timeAgoText.setText(Utility.getTimeAgo(roomCreatedDate.getTime()));
         }
 
         return convertView;

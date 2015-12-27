@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -24,6 +25,10 @@ import java.util.ArrayList;
 class MessageAdapter extends BaseAdapter {
     private static final int TYPE_MESSAGE = 0;
     private static final int TYPE_BROADCAST = 1;
+
+    private static final int MSG_MENU_COPY_TEXT = 0;
+    private static final int MSG_MENU_VIEW_DETAILS = 1;
+    private static final int MSG_MENU_VIEW_PROFILE = 2;
 
     private final String username;
 
@@ -88,7 +93,7 @@ class MessageAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(context);
 
         switch (getItemViewType(position)) {
@@ -129,12 +134,23 @@ class MessageAdapter extends BaseAdapter {
                                     .setItems(R.array.message_dialog_choice_list, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            if(which == 0) {
-                                                ClipboardManager clipMan = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                                                ClipData clip = ClipData.newPlainText("chat message", messageViewHolder.messageText.getText().toString());
-                                                clipMan.setPrimaryClip(clip);
+                                            switch(which) {
+                                                case MSG_MENU_COPY_TEXT:
+                                                    ClipboardManager clipMan = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                                                    ClipData clip = ClipData.newPlainText("chat message", messageViewHolder.messageText.getText().toString());
+                                                    clipMan.setPrimaryClip(clip);
 
-                                                Toast.makeText(context, "Message copied to clipboard.", Toast.LENGTH_LONG).show();
+                                                    Toast.makeText(context, "Message copied to clipboard.", Toast.LENGTH_LONG).show();
+                                                    break;
+                                                case MSG_MENU_VIEW_DETAILS:
+                                                    break;
+                                                case MSG_MENU_VIEW_PROFILE:
+                                                    Intent intent = new Intent(context, UserProfileActivity.class);
+                                                    intent.putExtra("username", messageViewHolder.usernameText.getText().toString());
+                                                    context.startActivity(intent);
+                                                    break;
+                                                default:
+                                                    break;
                                             }
                                         }
                                     });

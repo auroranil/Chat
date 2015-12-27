@@ -71,7 +71,7 @@ def signup():
 
 @main.route('/fetchrooms', methods=['POST'])
 @authenticated_only_http
-def fetchrooms():
+def fetch_rooms():
     global Room
     global User
     
@@ -92,7 +92,7 @@ def fetchrooms():
 
 @main.route('/createroom', methods=['POST'])
 @authenticated_only_http
-def createroom():
+def create_room():
     data = json.loads(request.data)
     
     if data is not None:
@@ -107,6 +107,17 @@ def createroom():
             return c
         return json.dumps({"created": True, "room_id": room.id})
     return json.dumps({"created": False})
+
+@main.route('/user/<user_id>', methods=['POST'])
+@authenticated_only_http
+def query_user(user_id):
+    global User
+    
+    user = User.query.get(user_id)
+    
+    if user is not None:
+        return json.dumps({"username": user.username, "created_date": str(user.created_date)})
+    return json.dumps({"error": "User with ID %r does not exist." % user_id})
 
 @main.route('/logout', methods=['POST'])
 @authenticated_only_http

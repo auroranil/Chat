@@ -1,6 +1,13 @@
 package com.example.saurabh.chat;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class Utility {
+    // Start of Google Licensed Software
+
     /*
      * Copyright 2012 Google Inc.
      *
@@ -50,5 +57,21 @@ public class Utility {
         } else {
             return diff / DAY_MILLIS + " days ago";
         }
+    }
+
+    // End of Google Licensed Software
+
+    public static Date parseDateAsUTC(String date_str) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date d = null;
+
+        try {
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            d = df.parse(date_str);
+        } catch(ParseException e) {
+            e.printStackTrace();
+        }
+
+        return d;
     }
 }
