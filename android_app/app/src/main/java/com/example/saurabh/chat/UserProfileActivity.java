@@ -38,6 +38,10 @@ public class UserProfileActivity extends AppCompatActivity {
 
     StatusLayout statusLayout;
 
+    private static final int REFRESH_MILLIS = 30000;
+    RefreshTimeAgoTimerTask refreshTimeAgoTimerTask;
+    Date createdDate, lastActiveDate;
+
     Resources res;
 
     @Override
@@ -118,8 +122,28 @@ public class UserProfileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class QueryUserAsyncTask extends AsyncTask<String, String, JSONObject> {
+    @Override
+    public void onPause() {
+        // If initialised, cancel the timer to stop it from hogging resources
+        if(refreshTimeAgoTimerTask != null) {
+            refreshTimeAgoTimerTask.cancel();
+        }
 
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        // If timer task has been initialised, it has been cancelled and
+        // we need to create a new timer task to restart it.
+        if(refreshTimeAgoTimerTask != null) {
+            refreshTimeAgoTimerTask = new RefreshTimeAgoTimerTask();
+        }
+
+        super.onResume();
+    }
+
+    private class QueryUserAsyncTask extends AsyncTask<String, String, JSONObject> {
         @Override
         protected JSONObject doInBackground(String... params) {
             JSONObject outputJSON = new JSONParser().getJSONFromUrl(url + "/user/" + look_up_user_id, inputJSON);
@@ -138,33 +162,13 @@ public class UserProfileActivity extends AppCompatActivity {
                 usernameDisplayText.setText(jsonObject.getString("username"));
                 statusText.setText(jsonObject.getBoolean("online") ? res.getString(R.string.status_online) : res.getString(R.string.status_offline));
 
-                final Date createdDate = Utility.parseDateAsUTC(jsonObject.getString("created_date"));
+                createdDate = Utility.parseDateAsUTC(jsonObject.getString("created_date"));
                 displayJoinedDateText.setText(res.getString(R.string.joined_date, Utility.getTimeAgo(createdDate.getTime())));
 
-                final Date lastActiveDate = Utility.parseDateAsUTC(jsonObject.getString("last_active_date"));
+                lastActiveDate = Utility.parseDateAsUTC(jsonObject.getString("last_active_date"));
                 displayLastActiveDateText.setText(res.getString(R.string.last_active_date, Utility.getTimeAgo(lastActiveDate.getTime())));
 
-                new Timer().scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        UserProfileActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                displayJoinedDateText.setText(res.getString(R.string.joined_date, Utility.getTimeAgo(createdDate.getTime())));
-                                displayLastActiveDateText.setText(res.getString(R.string.last_active_date, Utility.getTimeAgo(lastActiveDate.getTime())));
-
-                                // Check to see if the activity hasn't finished yet.
-                                if (UserProfileActivity.this.isFinishing()) {
-                                    System.out.println("test " + ((ChatApplication) getApplication()).test);
-                                } else {
-                                    // Stop timer
-                                    cancel();
-                                    ((ChatApplication) getApplication()).test++;
-                                }
-                            }
-                        });
-                    }
-                }, 0, 5000);
+                refreshTimeAgoTimerTask = new RefreshTimeAgoTimerTask();
             } catch (JSONException e) {
                 e.printStackTrace();
                 statusLayout.setError(String.format("Unable to query user ID '%s'", look_up_user_id));
@@ -182,6 +186,24 @@ public class UserProfileActivity extends AppCompatActivity {
             } else if(has_requested_to_be_friends) {
                 sendFriendRequestButton.setText("Accept Friend Request");
             }
+        }
+    }
+
+    private class RefreshTimeAgoTimerTask extends TimerTask {
+
+        public RefreshTimeAgoTimerTask() {
+            new Timer().scheduleAtFixedRate(this, REFRESH_MILLIS, REFRESH_MILLIS);
+        }
+
+        @Override
+        public void run() {
+            UserProfileActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    displayJoinedDateText.setText(res.getString(R.string.joined_date, Utility.getTimeAgo(createdDate.getTime())));
+                    displayLastActiveDateText.setText(res.getString(R.string.last_active_date, Utility.getTimeAgo(lastActiveDate.getTime())));
+                }
+            });
         }
     }
 }
