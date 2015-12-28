@@ -4,6 +4,7 @@ from model import *
 import sqlalchemy
 from flask import request, render_template
 
+from datetime import datetime, timedelta
 import functools
 import json
 
@@ -45,6 +46,7 @@ def login():
         if auth is not None:
             username, password = auth['username'], auth['password']
             user = User.query.filter_by(username=username).first()
+            
             if user is not None:
                 session = user.authenticate(password, UserSession)
                 if session != None:
@@ -116,7 +118,14 @@ def query_user(user_id):
     user = User.query.get(user_id)
     
     if user is not None:
-        return json.dumps({"username": user.username, "created_date": str(user.created_date)})
+        return json.dumps(
+            {
+                "username": user.username, 
+                "created_date": str(user.created_date), 
+                "last_active_date": str(user.last_active_date), 
+                "online": datetime.utcnow() - user.last_active_date < timedelta(minutes=15)
+            }
+        )
     return json.dumps({"error": "User with ID %r does not exist." % user_id})
 
 @main.route('/logout', methods=['POST'])

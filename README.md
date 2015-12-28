@@ -30,6 +30,7 @@ A simple chat application for android with a python flask server as the backend.
 * Public rooms (display a list of rooms to join, and a edittext and button to host a room)
 * Tabs in MenuActivity to display which fragment the user is on (rooms or friends)
 * Friends list structure in database
+* User profile (username, status, joined date, last active date, is online)
 
 ## TODO:
 * Ability to add (via requests and accepting requests) and remove friends
@@ -39,7 +40,9 @@ A simple chat application for android with a python flask server as the backend.
 * Ability to delete account
 * Message caching (to reduce load on central server)
 * Private rooms (request to join, join with password)
-* User profile (username, status, joined date, send friend request)
 * Private message chat to a single friend
 * Block list
 * Show where people have read up to (like in google+ hangouts)
+* Replicate android features onto the web application
+* Able to edit and save user bio
+* Show user activity in user profile

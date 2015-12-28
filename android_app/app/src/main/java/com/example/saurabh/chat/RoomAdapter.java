@@ -1,6 +1,6 @@
 package com.example.saurabh.chat;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +14,11 @@ import java.util.Date;
 
 class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
-    private final Context context;
+    private final Activity activity;
     private final ArrayList<Object> mArrayList = new ArrayList<>();
 
-    public RoomAdapter(Context context) {
-        this.context = context;
+    public RoomAdapter(Activity activity) {
+        this.activity = activity;
     }
 
     public void clear() {
@@ -62,9 +62,9 @@ class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(activity);
 
-        RoomViewHolder roomViewHolder;
+        final RoomViewHolder roomViewHolder;
         if(convertView == null) {
             convertView = inflater.inflate(R.layout.listview_rooms, parent, false);
 
@@ -81,9 +81,24 @@ class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener
         roomViewHolder.roomNameText.setText(roomItem.getRoomName());
         roomViewHolder.usernameText.setText(roomItem.getUsername());
 
-        Date roomCreatedDate = Utility.parseDateAsUTC(roomItem.getDate());
+        final Date roomCreatedDate = Utility.parseDateAsUTC(roomItem.getDate());
         if(roomCreatedDate != null) {
             roomViewHolder.timeAgoText.setText(Utility.getTimeAgo(roomCreatedDate.getTime()));
+
+//            // Update time ago text every 30 seconds, which is half of the smallest unit of time:
+//            // a minute.
+//            new Timer().scheduleAtFixedRate(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            roomViewHolder.timeAgoText.setText(Utility.getTimeAgo(roomCreatedDate.getTime()));
+//                            System.out.println("test");
+//                        }
+//                    });
+//                }
+//            }, 0, 1000);
         }
 
         return convertView;
@@ -91,7 +106,7 @@ class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(context, "Item: " + position, Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Item: " + position, Toast.LENGTH_SHORT).show();
     }
 
     public static class RoomItem {

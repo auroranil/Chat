@@ -9,6 +9,7 @@ public class Utility {
     // Start of Google Licensed Software
 
     /*
+     * Modified by Saurabh Joshi
      * Copyright 2012 Google Inc.
      *
      * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +38,7 @@ public class Utility {
         }
 
         long now = System.currentTimeMillis();
-        if (time > now || time <= 0) {
+        if (time > now + MINUTE_MILLIS || time <= 0) {
             return null;
         }
 

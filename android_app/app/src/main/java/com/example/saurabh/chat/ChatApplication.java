@@ -8,6 +8,7 @@ import android.util.Log;
 public class ChatApplication extends Application {
     private static final String TAG = "ChatApplication";
     private String url;
+    public int test = 0;
 
     private SharedPreferences sharedPreferences;
 

@@ -6,68 +6,79 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.saurabh.chat.UserProfileActivity">
 
-    <TextView
-        android:text="@string/template_username"
-        android:layout_width="wrap_content"
-        android:id="@+id/txt_display_username"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="22sp" />
+    <RelativeLayout
+        android:id="@+id/layout_display_user_profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/no_bio_provided"
-        android:textStyle="italic"
-        android:id="@+id/txt_display_bio"
-        android:layout_below="@+id/txt_display_username"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        <TextView
+            android:text="@string/template_username"
+            android:layout_width="wrap_content"
+            android:id="@+id/txt_display_username"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="22sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/status_offline"
-        android:id="@+id/txt_display_status"
-        android:layout_alignTop="@+id/txt_display_username"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_bio_provided"
+            android:textStyle="italic"
+            android:id="@+id/txt_display_bio"
+            android:layout_below="@+id/txt_display_username"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Last active y days ago"
-        android:id="@+id/txt_display_last_active"
-        android:layout_below="@+id/txt_display_status"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status_offline"
+            android:id="@+id/txt_display_status"
+            android:layout_alignTop="@+id/txt_display_username"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Joined x days ago"
-        android:id="@+id/txt_display_joined_date"
-        android:layout_below="@+id/txt_display_bio"
-        android:layout_alignRight="@+id/txt_display_last_active"
-        android:layout_alignEnd="@+id/txt_display_last_active" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/last_active_date"
+            android:id="@+id/txt_display_last_active"
+            android:layout_below="@+id/txt_display_status"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Send friend request"
-        android:id="@+id/btn_send_friend_request"
-        android:layout_below="@+id/txt_display_joined_date"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="43dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/joined_date"
+            android:id="@+id/txt_display_joined_date"
+            android:layout_below="@+id/txt_display_last_active"
+            android:layout_alignRight="@+id/txt_display_last_active"
+            android:layout_alignEnd="@+id/txt_display_last_active" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Block user"
-        android:id="@+id/btn_block_user"
-        android:layout_below="@+id/btn_send_friend_request"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send friend request"
+            android:id="@+id/btn_send_friend_request"
+            android:layout_below="@+id/txt_display_joined_date"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="43dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Block user"
+            android:id="@+id/btn_block_user"
+            android:layout_alignTop="@+id/btn_send_friend_request"
+            android:layout_toRightOf="@+id/btn_send_friend_request"
+            android:layout_toEndOf="@+id/btn_send_friend_request" />
+
+    </RelativeLayout>
+
+    <include layout="@layout/layout_status"/>
 
 </RelativeLayout>

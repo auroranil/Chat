@@ -37,6 +37,7 @@ class User(db.Model):
         if user is not None:
             s = UserSession.query.filter_by(user_id=user.id, hash=session_hash).first()
             if s is not None:
+                user.update_last_active_date()
                 return True
         else:
             print("Username with id=%r does not exist.") % user_id
@@ -55,3 +56,7 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
         return self.generate_session(UserSession)
+        
+    def update_last_active_date(self):
+        self.last_active_date = datetime.datetime.utcnow()
+        db.session.commit()

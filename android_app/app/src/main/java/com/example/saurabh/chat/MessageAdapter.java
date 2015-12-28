@@ -146,7 +146,7 @@ class MessageAdapter extends BaseAdapter {
                                                     break;
                                                 case MSG_MENU_VIEW_PROFILE:
                                                     Intent intent = new Intent(context, UserProfileActivity.class);
-                                                    intent.putExtra("username", messageViewHolder.usernameText.getText().toString());
+                                                    intent.putExtra("user_id", ((MessageItem) getItem(position)).user_id);
                                                     context.startActivity(intent);
                                                     break;
                                                 default:
