@@ -15,7 +15,7 @@ class Room(db.Model):
         self.created_by_user_id = created_by_user_id
         
     def __repr__(self):
-        return '<Room(id=%r, room_name=%s, created_by_user_id=%r)>' % (self.id, self.room_name, self.created_by_user_id)
+        return '<Room(id=%r, room_name=%r, created_by_user_id=%r)>' % (self.id, self.room_name, self.created_by_user_id)
         
     def commit(self):
         db.session.add(self)

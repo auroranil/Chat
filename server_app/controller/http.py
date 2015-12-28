@@ -39,8 +39,6 @@ def login():
     if request.method == 'GET':
         return render_template_custom('login.html')
     elif request.method == 'POST':
-        print "Someone is logging in..."
-        print request.data
         auth = json.loads(request.data)
 
         if auth is not None:
@@ -50,6 +48,7 @@ def login():
             if user is not None:
                 session = user.authenticate(password, UserSession)
                 if session != None:
+                    print "%r has logged in." % user
                     return json.dumps({"authenticated": True, "user_id": user.id, "session": session})
                 return json.dumps({"authenticated": False, "reason": "Either session is invalid or session has expired."})
             return json.dumps({"authenticated": False, "reason": "Username does not exist."})
@@ -60,7 +59,6 @@ def signup():
     if request.method == 'GET':
         return render_template_custom('signup.html')
     elif request.method == 'POST':
-        print "Someone is signing up..."
         cred = json.loads(request.data)
         
         if cred is not None:
@@ -68,6 +66,7 @@ def signup():
             user = User(username)
             session = user.register(password, UserSession)
             if session != None:
+                print "%r has signed up." % user
                 return json.dumps({"registered": True, "user_id": user.id, "session": session})
         return json.dumps({"registered": False})
 
@@ -135,10 +134,9 @@ def logout():
     if cred is not None:
         username, user_id, session = cred.get('username'), cred.get('user_id'), cred.get('session')
         if username is not None and user_id is not None and session is not None:
-            print "%r is logging out..." % username
             user = User.query.get(user_id)
             if user is not None:
-                print "Removing %s " % user
+                print "%s has logged out." % user
                 user.remove_session(session, UserSession)
                 return json.dumps({"logged out": True})
     return json.dumps({"logged out": False})

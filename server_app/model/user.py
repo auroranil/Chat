@@ -14,7 +14,7 @@ class User(db.Model):
         self.username = username
         
     def __repr__(self):
-        return '<User(id=%r, username=%s)>' % (self.id, self.username)
+        return '<User(id=%r, username=%r)>' % (self.id, self.username)
         
     def authenticate(self, password, UserSession):
         u = User.query.filter_by(username=self.username).first()

@@ -17,7 +17,7 @@ class UserSession(db.Model):
         self.hash = b64encode(urandom(24)).decode('utf-8')
         
     def __repr__(self):
-        return '<UserSession(user_id=%r, hash=%s)>' % (self.user_id, self.hash)
+        return '<UserSession(user_id=%r, hash=%r)>' % (self.user_id, self.hash)
     
     def commit(self):
         db.session.add(self)
