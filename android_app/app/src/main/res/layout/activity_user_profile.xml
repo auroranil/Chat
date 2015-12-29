@@ -79,6 +79,9 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/layout_status"/>
+    <com.example.saurabh.chat.layouts.StatusLayout
+        android:id="@+id/layout_status"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.example.saurabh.chat.ChatApplication;
 import com.example.saurabh.chat.network.JSONParser;
 import com.example.saurabh.chat.R;
-import com.example.saurabh.chat.utilities.StatusLayout;
+import com.example.saurabh.chat.layouts.StatusLayout;
 import com.example.saurabh.chat.utilities.Utility;
 
 import org.json.JSONException;
@@ -95,7 +95,7 @@ public class UserProfileActivity extends AppCompatActivity {
         layoutDisplayUserProfile = (RelativeLayout) findViewById(R.id.layout_display_user_profile);
 
         layoutDisplayUserProfile.setVisibility(View.GONE);
-        statusLayout = new StatusLayout(this);
+        statusLayout = (StatusLayout) findViewById(R.id.layout_status);
         statusLayout.setLoading();
 
         (new QueryUserAsyncTask()).execute();
