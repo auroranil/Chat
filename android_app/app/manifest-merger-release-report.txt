@@ -53,7 +53,7 @@ MERGED from com.android.support:support-v4:22.2.0:22:5
 		ADDED from AndroidManifest.xml:21:9
 	android:name
 		ADDED from AndroidManifest.xml:17:9
-activity#com.example.saurabh.chat.WelcomeActivity
+activity#com.example.saurabh.chat.activities.WelcomeActivity
 ADDED from AndroidManifest.xml:22:9
 	android:label
 		ADDED from AndroidManifest.xml:26:13
@@ -80,7 +80,7 @@ MERGED from com.google.android.gms:play-services:6.5.87:21:9
 		ADDED from AndroidManifest.xml:35:13
 	android:value
 		ADDED from AndroidManifest.xml:36:13
-activity#com.example.saurabh.chat.ChatActivity
+activity#com.example.saurabh.chat.activities.ChatActivity
 ADDED from AndroidManifest.xml:38:9
 	android:label
 		ADDED from AndroidManifest.xml:42:13
@@ -96,19 +96,19 @@ ADDED from AndroidManifest.xml:43:13
 		ADDED from AndroidManifest.xml:44:17
 	android:value
 		ADDED from AndroidManifest.xml:45:17
-activity#com.example.saurabh.chat.SettingsActivity
+activity#com.example.saurabh.chat.activities.SettingsActivity
 ADDED from AndroidManifest.xml:47:9
 	android:label
 		ADDED from AndroidManifest.xml:49:13
 	android:name
 		ADDED from AndroidManifest.xml:48:13
-activity#com.example.saurabh.chat.UserProfileActivity
+activity#com.example.saurabh.chat.activities.UserProfileActivity
 ADDED from AndroidManifest.xml:51:9
 	android:label
 		ADDED from AndroidManifest.xml:53:13
 	android:name
 		ADDED from AndroidManifest.xml:52:13
-activity#com.example.saurabh.chat.MenuActivity
+activity#com.example.saurabh.chat.activities.MenuActivity
 ADDED from AndroidManifest.xml:55:9
 	android:label
 		ADDED from AndroidManifest.xml:59:13

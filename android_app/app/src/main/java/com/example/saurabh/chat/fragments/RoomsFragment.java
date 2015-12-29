@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,9 +10,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-/**
- * Created by saurabh on 26/11/15.
- */
+import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.activities.ChatActivity;
+import com.example.saurabh.chat.adapters.RoomAdapter;
+import com.example.saurabh.chat.network.FetchRoomsAsyncTask;
+
 public class RoomsFragment extends Fragment {
 
     public ListView listRooms;

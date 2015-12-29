@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.activities;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,6 +10,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.saurabh.chat.ChatApplication;
+import com.example.saurabh.chat.network.JSONParser;
+import com.example.saurabh.chat.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

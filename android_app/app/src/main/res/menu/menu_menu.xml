@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.saurabh.chat.MenuActivity">
+    tools:context=".activities.MenuActivity">
     <item android:id="@+id/action_create_room" android:title="Create room"
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_user_profile" android:title="@string/action_user_profile"

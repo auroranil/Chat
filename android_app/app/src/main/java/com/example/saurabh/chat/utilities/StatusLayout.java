@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.utilities;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -8,9 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-/**
- * Created by saurabh on 28/12/15.
- */
+import com.example.saurabh.chat.R;
+
 public class StatusLayout {
     Activity activity;
     LinearLayout status;

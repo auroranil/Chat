@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

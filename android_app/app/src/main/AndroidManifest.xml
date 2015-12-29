@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".activities.WelcomeActivity"
             android:launchMode="singleTop"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
@@ -36,24 +36,24 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".ChatActivity"
+            android:name=".activities.ChatActivity"
             android:configChanges="orientation|screenSize"
-            android:parentActivityName=".MenuActivity"
+            android:parentActivityName=".activities.MenuActivity"
             android:label="@string/title_activity_chat" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MenuActivity" />
+                android:value=".activities.MenuActivity" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name=".UserProfileActivity"
+            android:name=".activities.UserProfileActivity"
             android:label="@string/title_activity_user_profile" >
         </activity>
         <activity
-            android:name=".MenuActivity"
+            android:name=".activities.MenuActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:label="@string/title_activity_menu" >

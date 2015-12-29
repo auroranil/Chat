@@ -1,7 +1,11 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.network;
 
 import android.os.AsyncTask;
 import android.widget.Toast;
+
+import com.example.saurabh.chat.ChatApplication;
+import com.example.saurabh.chat.adapters.RoomAdapter;
+import com.example.saurabh.chat.fragments.RoomsFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;

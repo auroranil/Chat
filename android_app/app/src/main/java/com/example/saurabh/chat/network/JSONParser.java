@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.network;
 
 import android.util.Log;
 

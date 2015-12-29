@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.adapters;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
@@ -20,9 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.activities.UserProfileActivity;
+
 import java.util.ArrayList;
 
-class MessageAdapter extends BaseAdapter {
+public class MessageAdapter extends BaseAdapter {
     private static final int TYPE_MESSAGE = 0;
     private static final int TYPE_BROADCAST = 1;
 

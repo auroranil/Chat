@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.adapters;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -9,10 +9,13 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.utilities.Utility;
+
 import java.util.ArrayList;
 import java.util.Date;
 
-class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+public class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
     private final Activity activity;
     private final ArrayList<Object> mArrayList = new ArrayList<>();

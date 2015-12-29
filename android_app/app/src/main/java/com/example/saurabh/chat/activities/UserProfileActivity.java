@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.activities;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -12,6 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.example.saurabh.chat.ChatApplication;
+import com.example.saurabh.chat.network.JSONParser;
+import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.utilities.StatusLayout;
+import com.example.saurabh.chat.utilities.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -146,9 +152,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private class QueryUserAsyncTask extends AsyncTask<String, String, JSONObject> {
         @Override
         protected JSONObject doInBackground(String... params) {
-            JSONObject outputJSON = new JSONParser().getJSONFromUrl(url + "/user/" + look_up_user_id, inputJSON);
-
-            return outputJSON;
+            return new JSONParser().getJSONFromUrl(url + "/user/" + look_up_user_id, inputJSON);
         }
 
         @Override

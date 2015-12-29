@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -20,6 +20,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.example.saurabh.chat.ChatApplication;
+import com.example.saurabh.chat.network.CreateRoomAsyncTask;
+import com.example.saurabh.chat.fragments.FriendsListFragment;
+import com.example.saurabh.chat.network.Logout;
+import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.fragments.RoomsFragment;
 
 
 public class MenuActivity extends AppCompatActivity {

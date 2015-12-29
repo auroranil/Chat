@@ -1,4 +1,4 @@
-package com.example.saurabh.chat;
+package com.example.saurabh.chat.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.saurabh.chat.ChatApplication;
+import com.example.saurabh.chat.adapters.MessageAdapter;
+import com.example.saurabh.chat.R;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.IO;
