@@ -46,10 +46,12 @@
         </activity>
         <activity
             android:name=".activities.SettingsActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
             android:name=".activities.UserProfileActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_user_profile" >
         </activity>
         <activity

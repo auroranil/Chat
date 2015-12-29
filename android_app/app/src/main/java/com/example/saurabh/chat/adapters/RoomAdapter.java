@@ -30,11 +30,13 @@ public class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickL
     }
 
     public void addItem(final Object item) {
+        if(item == null) return;
         mArrayList.add(item);
         notifyDataSetChanged();
     }
 
     public void addItems(final ArrayList<Object> items) {
+        if(items == null) return;
         mArrayList.addAll(items);
         notifyDataSetChanged();
     }

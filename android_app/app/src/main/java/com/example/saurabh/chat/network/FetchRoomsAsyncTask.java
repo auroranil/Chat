@@ -1,7 +1,7 @@
 package com.example.saurabh.chat.network;
 
 import android.os.AsyncTask;
-import android.widget.Toast;
+import android.view.View;
 
 import com.example.saurabh.chat.ChatApplication;
 import com.example.saurabh.chat.adapters.RoomAdapter;
@@ -72,12 +72,16 @@ public class FetchRoomsAsyncTask extends AsyncTask<String, String, ArrayList<Roo
                 roomsFragment.swipeContainer.setRefreshing(false);
 
                 if(rooms == null) {
-                    Toast.makeText(roomsFragment.getActivity(), "Unable to load room list. Please try again later.", Toast.LENGTH_LONG).show();
+                    roomsFragment.swipeContainer.setVisibility(View.GONE);
+                    roomsFragment.statusLayout.setError("Unable to load room list. Please try again later.");
                     return;
                 }
 
                 roomsFragment.getAdapter().clear();
                 roomsFragment.getAdapter().addItems((ArrayList) rooms);
+
+                roomsFragment.swipeContainer.setVisibility(View.VISIBLE);
+                roomsFragment.statusLayout.hide();
             }
         });
     }

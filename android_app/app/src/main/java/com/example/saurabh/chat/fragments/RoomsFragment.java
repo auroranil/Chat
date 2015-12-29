@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.example.saurabh.chat.R;
 import com.example.saurabh.chat.activities.ChatActivity;
 import com.example.saurabh.chat.adapters.RoomAdapter;
+import com.example.saurabh.chat.layouts.StatusLayout;
 import com.example.saurabh.chat.network.FetchRoomsAsyncTask;
 
 public class RoomsFragment extends Fragment {
@@ -21,6 +22,8 @@ public class RoomsFragment extends Fragment {
     public SwipeRefreshLayout swipeContainer;
     private String username, session;
     private int user_id;
+
+    public StatusLayout statusLayout;
 
     RoomAdapter adapter;
 
@@ -39,6 +42,7 @@ public class RoomsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rooms, container, false);
         listRooms = (ListView) view.findViewById(R.id.list_rooms);
+        statusLayout = (StatusLayout) view.findViewById(R.id.layout_status);
 
         listRooms.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -66,6 +70,13 @@ public class RoomsFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        swipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeContainer.setRefreshing(true);
+            }
+        });
+
         return view;
     }
 
@@ -74,5 +85,13 @@ public class RoomsFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         (new FetchRoomsAsyncTask(this, username, user_id, session)).execute();
+        swipeContainer.setVisibility(View.GONE);
+        statusLayout.setLoading();
+        statusLayout.setActionButton("Retry", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                (new FetchRoomsAsyncTask(RoomsFragment.this, username, user_id, session)).execute();
+            }
+        });
     }
 }

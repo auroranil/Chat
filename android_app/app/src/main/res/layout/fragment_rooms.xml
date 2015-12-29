@@ -15,5 +15,8 @@
             android:layout_gravity="center_horizontal" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
-
+    <com.example.saurabh.chat.layouts.StatusLayout
+        android:id="@+id/layout_status"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

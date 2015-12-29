@@ -34,6 +34,7 @@
     <string name="status_offline">Offline</string>
 
     <string name="loading">Loading...</string>
+    <string name="error">Error</string>
 
     <string-array
         name="message_dialog_choice_list">
