@@ -3,6 +3,7 @@ package com.example.saurabh.chat.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,11 +26,12 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.saurabh.chat.ChatApplication;
-import com.example.saurabh.chat.network.CreateRoomAsyncTask;
-import com.example.saurabh.chat.fragments.FriendsListFragment;
-import com.example.saurabh.chat.network.Logout;
 import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.fragments.FriendsListFragment;
 import com.example.saurabh.chat.fragments.RoomsFragment;
+import com.example.saurabh.chat.network.CreateRoomAsyncTask;
+import com.example.saurabh.chat.network.Logout;
+import com.example.saurabh.chat.utilities.CenteredImageSpan;
 
 
 public class MenuActivity extends AppCompatActivity {
@@ -202,13 +207,33 @@ public class MenuActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case FRAGMENT_ROOMS:
-                    return "Rooms";
-                case FRAGMENT_FRIENDS:
-                    return "Friends";
-                default:
-                    return "Null";
+            Drawable image;
+            SpannableString sb;
+            CenteredImageSpan imageSpan;
+
+            // https://guides.codepath.com/android/google-play-style-tabs-using-tablayout
+            try {
+                switch (position) {
+                    case FRAGMENT_ROOMS:
+                        image = MenuActivity.this.getResources().getDrawable(R.mipmap.ic_room_black);
+                        image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+                        sb = new SpannableString("  Rooms");
+                        imageSpan = new CenteredImageSpan(image, ImageSpan.ALIGN_BOTTOM);
+                        sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        return sb;
+                    case FRAGMENT_FRIENDS:
+                        image = MenuActivity.this.getResources().getDrawable(R.mipmap.ic_friend_black);
+                        image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+                        sb = new SpannableString("  Friends");
+                        CenteredImageSpan imageSpan2 = new CenteredImageSpan(image, ImageSpan.ALIGN_BOTTOM);
+                        sb.setSpan(imageSpan2, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        return sb;
+                    default:
+                        return "Null";
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                return "Null";
             }
         }
     }
