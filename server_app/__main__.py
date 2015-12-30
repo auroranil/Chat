@@ -2,6 +2,8 @@ import sys
 import os
 import logging
 
+if not os.path.exists(os.path.expanduser("~/.chatserver")):
+    os.makedirs(os.path.expanduser("~/.chatserver")
 logging.basicConfig(filename=os.path.expanduser("~/.chatserver/chat.log"), level=logging.DEBUG)
 
 from app import app, db, main, socketio
