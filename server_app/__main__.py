@@ -6,6 +6,10 @@ if not os.path.exists(os.path.expanduser("~/.chatserver")):
     os.makedirs(os.path.expanduser("~/.chatserver"))
 logging.basicConfig(filename=os.path.expanduser("~/.chatserver/chat.log"), level=logging.DEBUG)
 
+sys.stderr.close()
+sys.stdout.close()
+sys.stdin.close()
+
 from app import app, db, main, socketio
 db.create_all()
 app.register_blueprint(main)
