@@ -31,11 +31,10 @@ A simple chat application for android with a python flask server as the backend.
 * Tabs in MenuActivity to display which fragment the user is on (rooms or friends)
 * Friends list structure in database
 * User profile (username, status, joined date, last active date, is online)
+* Ability to add (via requests and accepting requests) and remove friends
 
 ## TODO:
-* Ability to add (via requests and accepting requests) and remove friends
-* Show friend requests in listview
-* Show friends in listview by fetching it from database and storing them in an adapter
+* Show friends requests and friends in listview by fetching it from database and storing them in an adapter
 * Ability to delete room
 * Ability to delete account
 * Message caching (to reduce load on central server)

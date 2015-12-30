@@ -19,3 +19,15 @@ class Friend(db.Model):
         
     def __repr__(self):
         return '<Friend(req_user_id=%r, res_user_id=%r, request=%r)>' % (self.req_user_id, self.res_user_id, self.request)
+        
+    def addAndCommit(self):
+        db.session.add(self)
+        db.session.commit()
+        
+    def update(self):
+        db.session.commit()
+        
+    def remove(self):
+        db.session.delete(self)
+        db.session.commit()
+

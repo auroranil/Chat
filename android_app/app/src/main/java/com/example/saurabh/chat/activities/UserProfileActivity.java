@@ -12,11 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.saurabh.chat.ChatApplication;
-import com.example.saurabh.chat.network.JSONParser;
 import com.example.saurabh.chat.R;
 import com.example.saurabh.chat.layouts.StatusLayout;
+import com.example.saurabh.chat.network.JSONParser;
 import com.example.saurabh.chat.utilities.Utility;
 
 import org.json.JSONException;
@@ -36,11 +37,12 @@ public class UserProfileActivity extends AppCompatActivity {
     private boolean is_self = false;
     private boolean is_friend = false;
     private boolean has_requested_to_be_friends = false;
+    private boolean has_sent_friend_request = false;
 
     RelativeLayout layoutDisplayUserProfile;
     ActionBar actionBar;
     TextView usernameDisplayText, displayJoinedDateText, displayLastActiveDateText, statusText;
-    Button sendFriendRequestButton, blockUserButton;
+    Button friendButton, blockUserButton;
 
     StatusLayout statusLayout;
 
@@ -89,8 +91,18 @@ public class UserProfileActivity extends AppCompatActivity {
         displayJoinedDateText = (TextView) findViewById(R.id.txt_display_joined_date);
         displayLastActiveDateText = (TextView) findViewById(R.id.txt_display_last_active);
         statusText = (TextView) findViewById(R.id.txt_display_status);
-        sendFriendRequestButton = (Button) findViewById(R.id.btn_send_friend_request);
+        friendButton = (Button) findViewById(R.id.btn_send_friend_request);
         blockUserButton = (Button) findViewById(R.id.btn_block_user);
+
+        friendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!is_self) {
+                    friendButton.setEnabled(false);
+                    (new FriendAsyncTask()).execute();
+                }
+            }
+        });
 
         layoutDisplayUserProfile = (RelativeLayout) findViewById(R.id.layout_display_user_profile);
 
@@ -149,6 +161,21 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    public void updateActionButtons() {
+        if(is_self) {
+            friendButton.setVisibility(View.GONE);
+            blockUserButton.setVisibility(View.GONE);
+        } else if(is_friend) {
+            friendButton.setText(res.getString(R.string.remove_friend));
+        } else if(has_requested_to_be_friends) {
+            friendButton.setText(res.getString(R.string.accept_friend_req));
+        } else if(has_sent_friend_request) {
+            friendButton.setText(res.getString(R.string.sent_friend_req));
+        } else {
+            friendButton.setText(res.getString(R.string.send_friend_req));
+        }
+    }
+
     private class QueryUserAsyncTask extends AsyncTask<String, String, JSONObject> {
         @Override
         protected JSONObject doInBackground(String... params) {
@@ -172,23 +199,65 @@ public class UserProfileActivity extends AppCompatActivity {
                 lastActiveDate = Utility.parseDateAsUTC(jsonObject.getString("last_active_date"));
                 displayLastActiveDateText.setText(res.getString(R.string.last_active_date, Utility.getTimeAgo(lastActiveDate.getTime())));
 
+                is_friend = jsonObject.getBoolean("is_friend");
+                has_requested_to_be_friends = jsonObject.getBoolean("has_requested_to_be_friends");
+                has_sent_friend_request = jsonObject.getBoolean("has_sent_friend_request");
+
+                updateActionButtons();
+                layoutDisplayUserProfile.setVisibility(View.VISIBLE);
+                statusLayout.hide();
+
                 refreshTimeAgoTimerTask = new RefreshTimeAgoTimerTask();
             } catch (JSONException e) {
                 e.printStackTrace();
+                layoutDisplayUserProfile.setVisibility(View.GONE);
                 statusLayout.setError(String.format("Unable to query user ID '%s'", look_up_user_id));
+            }
+        }
+    }
+
+    private class FriendAsyncTask extends AsyncTask<String, String, JSONObject> {
+        @Override
+        protected JSONObject doInBackground(String... params) {
+            try {
+                JSONObject jsonObject = new JSONObject(inputJSON.toString());
+                jsonObject.put("friend_user_id", look_up_user_id);
+                return new JSONParser().getJSONFromUrl(url + "/friend", jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            friendButton.setEnabled(true);
+
+            if(jsonObject == null) {
+                Toast.makeText(getBaseContext(), "Unable to perform action.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            layoutDisplayUserProfile.setVisibility(View.VISIBLE);
-            statusLayout.hide();
+            try {
+                if(jsonObject.getBoolean("success")) {
+                    if(is_friend) {
+                        is_friend = false;
+                    } else {
+                        if(has_requested_to_be_friends) {
+                            is_friend = true;
+                            has_requested_to_be_friends = false;
+                        } else {
+                            has_sent_friend_request = !has_sent_friend_request;
+                        }
+                    }
 
-            if(is_self) {
-                sendFriendRequestButton.setVisibility(View.GONE);
-                blockUserButton.setVisibility(View.GONE);
-            } else if(is_friend) {
-                sendFriendRequestButton.setVisibility(View.GONE);
-            } else if(has_requested_to_be_friends) {
-                sendFriendRequestButton.setText("Accept Friend Request");
+                    updateActionButtons();
+                } else {
+                    Toast.makeText(getBaseContext(), "Unable to perform action.", Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(getBaseContext(), "Unable to perform action.", Toast.LENGTH_SHORT).show();
             }
         }
     }
