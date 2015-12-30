@@ -3,17 +3,14 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="You have no friends."
-        android:id="@+id/text_no_friends"
-        android:layout_gravity="center_horizontal" />
+    <com.example.saurabh.chat.layouts.StatusLayout
+        android:id="@+id/layout_status_friendlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <ListView
+        android:id="@+id/listView_friends"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView_friends"
         android:layout_gravity="center_horizontal" />
 </LinearLayout>
