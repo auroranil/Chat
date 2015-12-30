@@ -38,6 +38,7 @@ public class MenuActivity extends AppCompatActivity {
     private String username, session;
     private int user_id = -1;
     RoomsFragment roomsFragment;
+    FriendsListFragment friendsListFragment;
     private CoordinatorLayout coordinatorLayout;
     private FloatingActionButton fab;
     private Intent intent;
@@ -55,11 +56,13 @@ public class MenuActivity extends AppCompatActivity {
         session = chatApplication.getSession();
 
         roomsFragment = new RoomsFragment();
-        Bundle roomsFragmentArguments = new Bundle();
-        roomsFragmentArguments.putInt("user_id", user_id);
-        roomsFragmentArguments.putString("username", username);
-        roomsFragmentArguments.putString("session", session);
-        roomsFragment.setArguments(roomsFragmentArguments);
+        friendsListFragment = new FriendsListFragment();
+        Bundle fragmentArguments = new Bundle();
+        fragmentArguments.putInt("user_id", user_id);
+        fragmentArguments.putString("username", username);
+        fragmentArguments.putString("session", session);
+        roomsFragment.setArguments(fragmentArguments);
+        friendsListFragment.setArguments(fragmentArguments);
 
         CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(getSupportFragmentManager(), roomsFragment);
 
@@ -194,7 +197,7 @@ public class MenuActivity extends AppCompatActivity {
                 case FRAGMENT_ROOMS:
                     return roomsFragment;
                 case FRAGMENT_FRIENDS:
-                    return new FriendsListFragment();
+                    return friendsListFragment;
                 default:
                     return null;
             }

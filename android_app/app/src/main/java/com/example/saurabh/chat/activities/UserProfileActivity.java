@@ -170,7 +170,7 @@ public class UserProfileActivity extends AppCompatActivity {
         } else if(has_requested_to_be_friends) {
             friendButton.setText(res.getString(R.string.accept_friend_req));
         } else if(has_sent_friend_request) {
-            friendButton.setText(res.getString(R.string.sent_friend_req));
+            friendButton.setText(res.getString(R.string.cancel_friend_req));
         } else {
             friendButton.setText(res.getString(R.string.send_friend_req));
         }

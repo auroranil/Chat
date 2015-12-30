@@ -1,6 +1,7 @@
 package com.example.saurabh.chat.adapters;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,12 @@ import java.util.Date;
 public class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
     private final Activity activity;
+    private final Resources res;
     private final ArrayList<Object> mArrayList = new ArrayList<>();
 
     public RoomAdapter(Activity activity) {
         this.activity = activity;
+        res = activity.getResources();
     }
 
     public void clear() {
@@ -84,7 +87,7 @@ public class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickL
 
         RoomItem roomItem = (RoomItem) getItem(position);
         roomViewHolder.roomNameText.setText(roomItem.getRoomName());
-        roomViewHolder.usernameText.setText(roomItem.getUsername());
+        roomViewHolder.usernameText.setText(res.getString(R.string.created_by_user, roomItem.getUsername()));
 
         final Date roomCreatedDate = Utility.parseDateAsUTC(roomItem.getDate());
         if(roomCreatedDate != null) {

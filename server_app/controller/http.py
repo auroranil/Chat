@@ -73,8 +73,7 @@ def signup():
 @main.route('/fetchrooms', methods=['POST'])
 @authenticated_only_http
 def fetch_rooms():
-    global Room
-    global User
+    global Room, User
     
     rooms = []
     for room in Room.query.all():
@@ -109,13 +108,54 @@ def create_room():
         return json.dumps({"created": True, "room_id": room.id})
     return json.dumps({"created": False})
 
+@main.route('/fetchfriends', methods=['POST'])
+@authenticated_only_http
+def fetch_friends():
+    global User, Friend
+    
+    data = json.loads(request.data)
+    
+    user_id = data.get("user_id")
+    
+    friends = []
+    for friend in Friend.query.filter(sqlalchemy.or_(Friend.req_user_id == user_id, Friend.res_user_id == user_id)).all():
+        friend_user_id = -1
+        if friend.req_user_id != user_id:
+            friend_user_id = friend.req_user_id
+        elif friend.res_user_id != user_id:
+            friend_user_id = friend.res_user_id
+            
+        friend_user = User.query.get(friend_user_id)
+        if friend_user is None:
+            created_by_user = {"id": -1, "username": "deleted"}
+        friends.append({
+            "user_id": friend_user.id,
+            "username": friend_user.username,
+            "date": str(friend_user.created_date)
+        })
+
+    return json.dumps({"friends": friends})
+
 @main.route('/user/<other_user_id>', methods=['POST'])
 @authenticated_only_http
 def query_user(other_user_id):
     global User, Friend
     user = User.query.get(other_user_id)
+    data = json.loads(request.data)
+    user_id = data.get("user_id")
     
-    friend = Friend.query.filter(sqlalchemy.or_(Friend.req_user_id == other_user_id, Friend.res_user_id == other_user_id)).first()
+    friend = Friend.query.filter(
+        sqlalchemy.or_(
+            sqlalchemy.and_(
+                Friend.req_user_id == user_id, 
+                Friend.res_user_id == int(other_user_id)
+            ), 
+            sqlalchemy.and_(
+                Friend.req_user_id == int(other_user_id),
+                Friend.res_user_id == user_id
+            )
+        )
+    ).first()
     
     if user is not None:
         outputDict = {
@@ -141,7 +181,18 @@ def friend():
     user_id = data.get("user_id")
     friend_user_id = data.get("friend_user_id")
     if user_id != friend_user_id:
-        friend = Friend.query.filter(sqlalchemy.or_(Friend.req_user_id == user_id, Friend.res_user_id == user_id)).first()
+        friend = Friend.query.filter(
+            sqlalchemy.or_(
+                sqlalchemy.and_(
+                    Friend.req_user_id == friend_user_id, 
+                    Friend.res_user_id == user_id
+                ), 
+                sqlalchemy.and_(
+                    Friend.req_user_id == user_id,
+                    Friend.res_user_id == friend_user_id
+                )
+            )
+        ).first()
         if friend is not None:
             if friend.request:
                 if friend.req_user_id == user_id:

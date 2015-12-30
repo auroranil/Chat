@@ -38,10 +38,10 @@ A simple chat application for android with a python flask server as the backend.
  * User profile (username, status, joined date, last active date, is online)
 * Friends
  * Ability to add (via requests and accepting requests) and remove friends
+ * Show friends in listview by fetching it from database and storing them in an adapter
 
 ## TODO:
 * Friends
- * Show friends in listview by fetching it from database and storing them in an adapter
  * Show friend requests within the same listview
  * Private message chat to a single friend
  * Block list

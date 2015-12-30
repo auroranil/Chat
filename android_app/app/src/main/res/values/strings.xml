@@ -29,6 +29,7 @@
 
     <string name="last_active_date">Last active %s</string>
     <string name="joined_date">Joined %s</string>
+    <string name="created_by_user">Created by %s</string>
 
     <string name="status_online">Online</string>
     <string name="status_offline">Offline</string>
@@ -37,9 +38,10 @@
     <string name="error">Error</string>
     
     <string name="send_friend_req">Add friend</string>
-    <string name="sent_friend_req">Sent friend request</string>
+    <string name="cancel_friend_req">Cancel friend request</string>
     <string name="accept_friend_req">Accept friend request</string>
     <string name="remove_friend">Remove friend</string>
+    <string name="became_friends">Became friends with you %s</string>
     <string name="block_user">Block user</string>
 
     <string-array

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
@@ -8,14 +10,14 @@
         android:layout_height="wrap_content"
         android:text="Username"
         android:textSize="24sp"
-        android:id="@+id/textView2" />
+        android:id="@+id/txt_username" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Became friends with you x days ago"
-        android:id="@+id/textView4"
-        android:layout_below="@+id/textView2"
+        android:text="@string/became_friends"
+        android:id="@+id/txt_became_friends"
+        android:layout_below="@+id/txt_username"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
