@@ -25,23 +25,47 @@ A simple chat application for android with a python flask server as the backend.
 * Constantly improve UI
 
 ## DONE:
-* Store session locally (using shared preferences with flag Context.MODE_PRIVATE)
-* Resume session automatically when remember me checkbox is checked and user returns to app
-* Public rooms (display a list of rooms to join, and a edittext and button to host a room)
-* Tabs in MenuActivity to display which fragment the user is on (rooms or friends)
-* Friends list structure in database
-* User profile (username, status, joined date, last active date, is online)
-* Ability to add (via requests and accepting requests) and remove friends
+* Caching 
+ * Store session locally (using shared preferences with flag Context.MODE_PRIVATE)
+ * Resume session automatically when remember me checkbox is checked and user returns to app
+* Rooms
+ * Public rooms (display a list of rooms to join, and a edittext and button to host a room)
+* Menu
+ * Tabs in MenuActivity to display which fragment the user is on (rooms or friends)
+* Database
+ * Friends list structure in database
+* User
+ * User profile (username, status, joined date, last active date, is online)
+* Friends
+ * Ability to add (via requests and accepting requests) and remove friends
 
 ## TODO:
-* Show friends requests and friends in listview by fetching it from database and storing them in an adapter
-* Ability to delete room
-* Ability to delete account
-* Message caching (to reduce load on central server)
-* Private rooms (request to join, join with password)
-* Private message chat to a single friend
-* Block list
-* Show where people have read up to (like in google+ hangouts)
-* Replicate android features onto the web application
-* Able to edit and save user bio
-* Show user activity in user profile
+* Friends
+ * Show friends in listview by fetching it from database and storing them in an adapter
+ * Show friend requests within the same listview
+ * Private message chat to a single friend
+ * Block list
+* Delete access
+ * Ability to delete room
+ * Ability to delete account
+* Caching 
+ * Messages
+ * Rooms
+ * Friends
+* Communication
+ * Replace API HTTP POST requests with RESTful API requests
+ * Create a class that abstracts code dealing with JSON with AsyncTask
+* Rooms
+ * Private rooms (request to join, join with password)
+ * Able to search a room
+ * Vote rooms
+* Chat
+ * Show where people have read up to (like in google+ hangouts)
+* Web
+ * Replicate android features onto the web application
+* User
+ * Able to edit and save user bio
+ * Able to recover by using email address (optional)
+ * Show user activity in user profile
+* Welcome screen
+ * Dynamically form-validate welcomeActivity as credentials are being entered.
