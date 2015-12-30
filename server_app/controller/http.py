@@ -1,3 +1,7 @@
+import logging
+
+logging.basicConfig(filename="server_app.log", level=logging.DEBUG)
+
 from app import main, app
 from model import *
 
@@ -16,10 +20,10 @@ def authenticated_only_http(f):
         session = data.get("session")
         
         if user_id is None or session is None:
-            print "Failed auth: Did not supply credentials"
+            logging.info("Failed auth: Did not supply credentials")
             return
         elif not User.session_in_user(user_id, session, UserSession):
-            print "Failed auth: Not in session"
+            logging.info("Failed auth: Not in session")
             return
         return f(*args, **kwargs)
     
@@ -30,7 +34,7 @@ def render_template_custom(path,**kwargs):
 
 @main.route('/', methods=['GET'])
 def welcome():
-    print request.cookies
+    logging.info(str(request.cookies))
     return render_template_custom('welcome.html')
         
 ## The password is checked here
@@ -48,7 +52,7 @@ def login():
             if user is not None:
                 session = user.authenticate(password, UserSession)
                 if session != None:
-                    print "%r has logged in." % user
+                    logging.info("%r has logged in." % user)
                     return json.dumps({"authenticated": True, "user_id": user.id, "session": session})
                 return json.dumps({"authenticated": False, "reason": "Either session is invalid or session has expired."})
             return json.dumps({"authenticated": False, "reason": "Username does not exist."})
@@ -66,7 +70,7 @@ def signup():
             user = User(username)
             session = user.register(password, UserSession)
             if session != None:
-                print "%r has signed up." % user
+                logging.info("%r has signed up." % user)
                 return json.dumps({"registered": True, "user_id": user.id, "session": session})
         return json.dumps({"registered": False})
 
@@ -97,7 +101,7 @@ def create_room():
     
     if data is not None:
         global Room, User
-        print "%r is creating room '%r'" % (data.get("username"), data.get("room_name"))
+        logging.info("%r is creating room '%r'" % (data.get("username"), data.get("room_name")))
         try:
             room = Room(data.get('room_name'), data.get("user_id"))
             room.commit()
@@ -198,22 +202,22 @@ def friend():
             if friend.request:
                 if friend.req_user_id == user_id:
                     # Remove friend request
-                    print "Removing friend request..."
+                    logging.debug("Removing friend request...")
                     friend.remove()
                     return json.dumps({"success": True})
                 elif friend.res_user_id == user_id:
                     # Accept friend request
-                    print "Accepting friend request..."
+                    logging.debug("Accepting friend request...")
                     friend.request = False
                     friend.update()
                     return json.dumps({"success": True})
             else:
                 # Remove friend
-                print "Removing friend..."
+                logging.debug("Removing friend...")
                 friend.remove()
                 return json.dumps({"success": True})
         else:
-            print "Adding friend request..."
+            logging.debug("Adding friend request...")
             friend = Friend(user_id, friend_user_id)
             friend.addAndCommit()
             return json.dumps({"success": True})
@@ -228,7 +232,7 @@ def logout():
         if username is not None and user_id is not None and session is not None:
             user = User.query.get(user_id)
             if user is not None:
-                print "%s has logged out." % user
+                logging.info("%s has logged out." % user)
                 user.remove_session(session, UserSession)
                 return json.dumps({"logged out": True})
     return json.dumps({"logged out": False})

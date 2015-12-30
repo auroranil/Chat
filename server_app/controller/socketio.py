@@ -1,3 +1,7 @@
+import logging
+
+logging.basicConfig(filename="server_app.log", level=logging.DEBUG)
+
 from app import socketio
 from model import *
 
@@ -9,14 +13,14 @@ def authenticated_only_socketio(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs): 
         if(len(args) == 0):
-            print "Failed auth: Did not supply credentials"
+            logging.info("Failed auth: Did not supply credentials")
             disconnect()
     
         user_id = args[0].get("user_id")
         session = args[0].get("session")
         
         if not User.session_in_user(user_id, session, UserSession):
-            print "Failed auth: Not in session"
+            logging.info("Failed auth: Not in session")
             disconnect()
         else:
             return f(*args, **kwargs)
@@ -33,7 +37,7 @@ def connected(data):
         disconnect()
     else:
         join_room("room" + str(room_id))
-        print(username + " has entered room '%s' (id=%r)." % (room_name, room_id))
+        logging.info(username + " has entered room '%s' (id=%r)." % (room_name, room_id))
 
 @socketio.on('leave')
 @authenticated_only_socketio
@@ -43,12 +47,12 @@ def disconnected(data):
     room_name = data.get('room_name')
     room_id = data.get('room_id')
     leave_room("room" + str(room_id))
-    print(username + " has left room '%s' (id=%r)." % (room_name, room_id))
+    logging.info(username + " has left room '%s' (id=%r)." % (room_name, room_id))
 
 @socketio.on('fetch messages')
 @authenticated_only_socketio
 def fetch_messages(data):
-    print "fetching messages..."
+    logging.debug("fetching messages...")
     global Message
     global Room
     global User
@@ -94,7 +98,7 @@ def stopped_typing_handler(username, room_id):
 @socketio.on('send message')
 @authenticated_only_socketio
 def handle_sent_message(data):
-    print('received message: ' + str(data))
+    logging.debug('received message: ' + str(data))
     
     global User, Message, Room
     message = Message(data.get('user_id'), data.get('message'), data.get('type'), data.get('room_id'))

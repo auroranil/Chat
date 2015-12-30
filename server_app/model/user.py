@@ -1,3 +1,7 @@
+import logging
+
+logging.basicConfig(filename="server_app.log", level=logging.DEBUG)
+
 from app import db, bcrypt
 import datetime
 
@@ -40,7 +44,7 @@ class User(db.Model):
                 user.update_last_active_date()
                 return True
         else:
-            print("Username with id=%r does not exist.") % user_id
+            logging.info("Username with id=%r does not exist.") % user_id
         return False
         
     def remove_session(self, hash, UserSession):
