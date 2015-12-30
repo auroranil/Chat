@@ -1,7 +1,8 @@
 import sys
+import os
 import logging
 
-logging.basicConfig(filename="server_app.log", level=logging.DEBUG)
+logging.basicConfig(filename=os.path.expanduser("~/.chatserver/chat.log"), level=logging.DEBUG)
 
 from app import app, db, main, socketio
 db.create_all()

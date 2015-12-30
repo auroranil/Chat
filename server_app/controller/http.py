@@ -1,6 +1,7 @@
 import logging
+import os
 
-logging.basicConfig(filename="server_app.log", level=logging.DEBUG)
+logging.basicConfig(filename=os.path.expanduser("~/.chatserver/chat.log"), level=logging.DEBUG)
 
 from app import main, app
 from model import *
