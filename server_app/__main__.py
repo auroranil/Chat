@@ -1,10 +1,11 @@
 import sys
 import os
 import logging
+import time
 
 if not os.path.exists(os.path.expanduser("~/.chatserver")):
     os.makedirs(os.path.expanduser("~/.chatserver"))
-logging.basicConfig(filename=os.path.expanduser("~/.chatserver/chat.log"), level=logging.DEBUG)
+logging.basicConfig(filename=os.path.expanduser("~/.chatserver/chat-"+time.strftime("%d-%m-%Y.log"), level=logging.DEBUG)
 
 sys.stderr.close()
 sys.stdout.close()
