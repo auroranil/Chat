@@ -1,7 +1,4 @@
 import logging
-import os
-
-logging.basicConfig(filename=os.path.expanduser("~/.chatserver/chat.log"), level=logging.DEBUG)
 
 from app import socketio
 from model import *
