@@ -109,23 +109,63 @@ def create_room():
         return json.dumps({"created": True, "room_id": room.id})
     return json.dumps({"created": False})
 
-@main.route('/user/<user_id>', methods=['POST'])
+@main.route('/user/<other_user_id>', methods=['POST'])
 @authenticated_only_http
-def query_user(user_id):
-    global User
+def query_user(other_user_id):
+    global User, Friend
+    user = User.query.get(other_user_id)
     
-    user = User.query.get(user_id)
+    friend = Friend.query.filter(sqlalchemy.or_(Friend.req_user_id == other_user_id, Friend.res_user_id == other_user_id)).first()
     
     if user is not None:
-        return json.dumps(
-            {
+        outputDict = {
                 "username": user.username, 
                 "created_date": str(user.created_date), 
                 "last_active_date": str(user.last_active_date), 
                 "online": datetime.utcnow() - user.last_active_date < timedelta(minutes=15)
-            }
-        )
-    return json.dumps({"error": "User with ID %r does not exist." % user_id})
+        }
+        
+        outputDict["is_friend"] = friend is not None and not friend.request
+        outputDict["has_requested_to_be_friends"] = friend is not None and friend.request and friend.req_user_id == int(other_user_id)
+        outputDict["has_sent_friend_request"] = friend is not None and friend.request and friend.res_user_id == int(other_user_id)
+    
+        return json.dumps(outputDict)
+    return json.dumps({"error": "User ID %r does not exist." % other_user_id})
+
+@main.route('/friend', methods=['POST'])
+@authenticated_only_http
+def friend():
+    global User, Friend
+    data = json.loads(request.data)
+    # If they are not the same user
+    user_id = data.get("user_id")
+    friend_user_id = data.get("friend_user_id")
+    if user_id != friend_user_id:
+        friend = Friend.query.filter(sqlalchemy.or_(Friend.req_user_id == user_id, Friend.res_user_id == user_id)).first()
+        if friend is not None:
+            if friend.request:
+                if friend.req_user_id == user_id:
+                    # Remove friend request
+                    print "Removing friend request..."
+                    friend.remove()
+                    return json.dumps({"success": True})
+                elif friend.res_user_id == user_id:
+                    # Accept friend request
+                    print "Accepting friend request..."
+                    friend.request = False
+                    friend.update()
+                    return json.dumps({"success": True})
+            else:
+                # Remove friend
+                print "Removing friend..."
+                friend.remove()
+                return json.dumps({"success": True})
+        else:
+            print "Adding friend request..."
+            friend = Friend(user_id, friend_user_id)
+            friend.addAndCommit()
+            return json.dumps({"success": True})
+    return json.dumps({"error": "Same User ID %r when trying to send friend request, accept friend request, or remove friends." % user_id})
 
 @main.route('/logout', methods=['POST'])
 @authenticated_only_http

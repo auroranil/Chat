@@ -6,6 +6,11 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".activities.UserProfileActivity">
 
+    <com.example.saurabh.chat.layouts.StatusLayout
+        android:id="@+id/layout_status"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <RelativeLayout
         android:id="@+id/layout_display_user_profile"
         android:layout_width="match_parent"
@@ -61,7 +66,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send friend request"
+            android:text="@string/send_friend_req"
             android:id="@+id/btn_send_friend_request"
             android:layout_below="@+id/txt_display_joined_date"
             android:layout_alignParentLeft="true"
@@ -71,17 +76,12 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Block user"
+            android:text="@string/block_user"
             android:id="@+id/btn_block_user"
-            android:layout_alignTop="@+id/btn_send_friend_request"
+            android:layout_below="@+id/txt_display_joined_date"
+            android:layout_marginTop="43dp"
             android:layout_toRightOf="@+id/btn_send_friend_request"
             android:layout_toEndOf="@+id/btn_send_friend_request" />
 
     </RelativeLayout>
-
-    <com.example.saurabh.chat.layouts.StatusLayout
-        android:id="@+id/layout_status"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
 </RelativeLayout>

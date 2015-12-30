@@ -33,8 +33,14 @@
     <string name="status_online">Online</string>
     <string name="status_offline">Offline</string>
 
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading&#8230;</string>
     <string name="error">Error</string>
+    
+    <string name="send_friend_req">Add friend</string>
+    <string name="sent_friend_req">Sent friend request</string>
+    <string name="accept_friend_req">Accept friend request</string>
+    <string name="remove_friend">Remove friend</string>
+    <string name="block_user">Block user</string>
 
     <string-array
         name="message_dialog_choice_list">
