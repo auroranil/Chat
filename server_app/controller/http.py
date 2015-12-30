@@ -131,7 +131,8 @@ def fetch_friends():
         friends.append({
             "user_id": friend_user.id,
             "username": friend_user.username,
-            "date": str(friend_user.created_date)
+            "request": friend.request,
+            "date": str(friend.created_date)
         })
 
     return json.dumps({"friends": friends})

@@ -49,10 +49,12 @@ public class FetchFriendsAsyncTask extends AsyncTask<String, String, ArrayList<F
 
             for(int i = 0; i < friendsJSONArray.length(); i++) {
                 friend = friendsJSONArray.getJSONObject(i);
-                FriendsAdapter.FriendsItem item = new FriendsAdapter.FriendsItem(
-                        friend.getString("username"),
-                        friend.getString("date"));
-                friends.add(item);
+                if(!friend.getBoolean("request")) {
+                    FriendsAdapter.FriendsItem item = new FriendsAdapter.FriendsItem(
+                            friend.getString("username"),
+                            friend.getString("date"));
+                    friends.add(item);
+                }
             }
             return friends;
         } catch (JSONException e) {
