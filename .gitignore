@@ -7,3 +7,4 @@
 /server_app/config.py
 *.db
 *.pyc
+*.log
