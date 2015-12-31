@@ -6,6 +6,8 @@ import atexit
 
 if not os.path.exists(os.path.expanduser("~/.chatserver")):
     os.makedirs(os.path.expanduser("~/.chatserver"))
+sys.path.append(os.path.expanduser("~/.chatserver"))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 if os.path.exists(os.path.expanduser("~/.chatserver/pid")):
     sys.stderr.write("The daemon seems to be already running. To override this behaviour, delete ~/.chatserver/pid\n")
     sys.exit(1)
@@ -50,8 +52,11 @@ sys.stdin.close()
 logging.info("Daemon spawned successfully, pid is %d" %os.getpid())
 
 from app import app, db, main, socketio
+logging.debug("app import OK")
 db.create_all()
+logging.debug("db OK")
 app.register_blueprint(main)
+logging.debug("blueprint OK")
 
 port = app.config['PORT']
 if len(sys.argv) == 2:
