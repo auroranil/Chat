@@ -21,7 +21,7 @@ except ImportError as e:
     config_file = open(os.path.expanduser("~/.chatserver/config.py"), "w")
     config_file.write("def configure(app):\n")
     config_file.write("    app.config['SECRET_KEY'] = %r\n" % os.urandom(24))
-    config_file.write("    app.config['SQLALCHEMY_DATABASE_URI'] = '%s'\n" % ("sqlite://"+os.path.expanduser("~/.chatserver/Chat.db")))
+    config_file.write("    app.config['SQLALCHEMY_DATABASE_URI'] = '%s'\n" % ("sqlite:///"+os.path.expanduser("~/.chatserver/Chat.db")))
     config_file.write("    # Disable track modifications to suppress warning\n")
     config_file.write("    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False\n")
     config_file.write("    # If port is not set in the second argument, set default port in the variable below.\n")

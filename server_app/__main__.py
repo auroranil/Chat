@@ -53,7 +53,12 @@ logging.info("Daemon spawned successfully, pid is %d" %os.getpid())
 
 from app import app, db, main, socketio
 logging.debug("app import OK")
-db.create_all()
+try:
+    db.create_all()
+except Exception, e:
+    logging.critical("Database loading failed: %s" %str(e))
+    sys.exit(1)
+
 logging.debug("db OK")
 app.register_blueprint(main)
 logging.debug("blueprint OK")
