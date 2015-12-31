@@ -45,9 +45,28 @@ pidfile = open(os.path.expanduser("~/.chatserver/pid"), "w")
 pidfile.write(str(os.getpid()))
 pidfile.close()
 
-sys.stderr.close()
-sys.stdout.close()
+"""
+Workaround to get socket.io logging the main logs
+Based on http://www.electricmonk.nl/log/2011/08/14/redirect-stdout-and-stderr-to-a-logger-in-python/
+"""
+class StreamToLogger(object):
+   def __init__(self, logger, log_level=logging.INFO):
+      self.logger = logger
+      self.log_level = log_level
+      self.linebuf = ''
+ 
+   def write(self, buf):
+      for line in buf.rstrip().splitlines():
+         self.logger.log(self.log_level, line.rstrip())
+
 sys.stdin.close()
+sys.stdout.close()
+sys.stderr.close()
+
+stdout_logger = logging.getLogger('STDOUT')
+sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
+stderr_logger = logging.getLogger('STDERR')
+sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
 
 logging.info("Daemon spawned successfully, pid is %d" %os.getpid())
 
@@ -68,4 +87,8 @@ if len(sys.argv) == 2:
     port = int(sys.argv[1])
 
 logging.info("Chat server is now running on 0.0.0.0:%r" % port)
-socketio.run(app, host="0.0.0.0", port=port)
+os.chdir(os.path.expanduser("~/Development/Chat"))
+try:
+    socketio.run(app, host="0.0.0.0", port=port, use_reloader=False)
+except Exception, e:
+    logging.critical("SocketIO failed: %s" %str(e))
