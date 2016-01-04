@@ -87,7 +87,6 @@ if len(sys.argv) == 2:
     port = int(sys.argv[1])
 
 logging.info("Chat server is now running on 0.0.0.0:%r" % port)
-os.chdir(os.path.expanduser("~/Development/Chat"))
 try:
     socketio.run(app, host="0.0.0.0", port=port, use_reloader=False)
 except Exception, e:
