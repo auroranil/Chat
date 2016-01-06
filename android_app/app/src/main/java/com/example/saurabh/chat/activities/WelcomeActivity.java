@@ -12,86 +12,109 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.saurabh.chat.ChatApplication;
-import com.example.saurabh.chat.network.JSONParser;
 import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.network.JSONParser;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 
-public class WelcomeActivity extends AppCompatActivity {
+
+public class WelcomeActivity extends AppCompatActivity implements Validator.ValidationListener {
+    private static final String TAG = "WelcomeActivity";
+
+    ChatApplication chatApplication;
+
+    @NotEmpty
+    private EditText url;
+    @NotEmpty
+    private EditText username;
+    @NotEmpty
+    private EditText password;
+    private CheckBox rememberMe;
+
+    private boolean signingUp = false;
+    private Validator validator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        if(((ChatApplication) this.getApplication()).isLoggedIn()) {
+        chatApplication = ((ChatApplication) WelcomeActivity.this.getApplication());
+
+        if(chatApplication.isLoggedIn()) {
             Intent chatIntent = new Intent(WelcomeActivity.this, MenuActivity.class);
             chatIntent.putExtra("returning user", true);
             startActivity(chatIntent);
         }
 
-        final EditText url = (EditText) findViewById(R.id.txt_server_url);
-        final EditText username = (EditText) findViewById(R.id.txt_username);
-        final EditText password = (EditText) findViewById(R.id.txt_password);
-        final CheckBox rememberMe = (CheckBox) findViewById(R.id.checkbox_remember_me);
+        validator = new Validator(this);
+        validator.setValidationListener(this);
+
+        url = (EditText) findViewById(R.id.txt_server_url);
+        username = (EditText) findViewById(R.id.txt_username);
+        password = (EditText) findViewById(R.id.txt_password);
+        rememberMe = (CheckBox) findViewById(R.id.checkbox_remember_me);
 
         final Button btnLogin = (Button) findViewById(R.id.btn_login);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String username_str = username.getText().toString();
-                String password_str = password.getText().toString();
-
-                Log.i("login", "Logging in as " + username_str);
-
-                if (username_str.isEmpty() || password_str.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Error: Please enter a non-empty username and non-empty password.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                String url_str = url.getText().toString();
-                if(!url_str.startsWith("https://") && !url_str.startsWith("http://")){
-                    url_str = "http://" + url_str;
-                }
-
-                if(!url_str.matches(".*:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$.*")) {
-                    url_str = url_str + ":5000";
-                }
-
-                Log.i("WelcomeActivity", url_str);
-
-                (new LoginAsyncTask(url_str, username_str, password_str, rememberMe.isChecked())).execute();
-                Toast.makeText(getApplicationContext(), "Logging in...", Toast.LENGTH_SHORT).show();
+                validator.validate();
             }
         });
 
         final Button btnSignUp = (Button) findViewById(R.id.btn_signup);
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String username_str = username.getText().toString();
-                String password_str = password.getText().toString();
-
-                if (username_str.isEmpty() || password_str.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Error: Please enter a non-empty username and non-empty password.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                String url_str = url.getText().toString();
-                if(!url_str.startsWith("https://") && !url_str.startsWith("http://")){
-                    url_str = "http://" + url_str;
-                }
-
-                if(!url_str.matches(".*:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$.*")) {
-                    url_str = url_str + ":5000";
-                }
-
-                Log.i("WelcomeActivity", url_str);
-
-                (new SignUpAsyncTask(url_str, username_str, password_str, rememberMe.isChecked())).execute();
-                Toast.makeText(getApplicationContext(), "Signing up...", Toast.LENGTH_SHORT).show();
+                validator.validate();
+                signingUp = true;
             }
         });
+    }
+
+    @Override
+    public void onValidationSucceeded() {
+        String username_str = username.getText().toString();
+        String password_str = password.getText().toString();
+
+        String url_str = url.getText().toString();
+        if (!url_str.startsWith("https://") && !url_str.startsWith("http://")) {
+            url_str = "http://" + url_str;
+        }
+
+        if (!url_str.matches(".*:([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$.*")) {
+            url_str = url_str + ":5000";
+        }
+
+        Log.i(TAG, "Connecting to " + url_str);
+
+        if(signingUp) {
+            (new SignUpAsyncTask(url_str, username_str, password_str, rememberMe.isChecked())).execute();
+            Toast.makeText(getApplicationContext(), "Signing up...", Toast.LENGTH_SHORT).show();
+        } else {
+            (new LoginAsyncTask(url_str, username_str, password_str, rememberMe.isChecked())).execute();
+            Toast.makeText(getApplicationContext(), "Logging in...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(this);
+
+            // Display error messages ;)
+            if (view instanceof EditText) {
+                ((EditText) view).setError(message);
+            } else {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     class SignUpAsyncTask extends AsyncTask<String, String, JSONObject> {
@@ -155,10 +178,10 @@ public class WelcomeActivity extends AppCompatActivity {
                 return;
             }
 
-            ((ChatApplication) WelcomeActivity.this.getApplication()).setCredentials(url, user_id, username, session);
+            chatApplication.setCredentials(url, user_id, username, session);
 
             if(rememberMe) {
-                ((ChatApplication) WelcomeActivity.this.getApplication()).rememberCredentials();
+                chatApplication.rememberCredentials();
             }
 
             Intent menuIntent = new Intent(WelcomeActivity.this, MenuActivity.class);
@@ -255,10 +278,10 @@ public class WelcomeActivity extends AppCompatActivity {
                 return;
             }
 
-            ((ChatApplication) WelcomeActivity.this.getApplication()).setCredentials(url, user_id, username, session);
+            chatApplication.setCredentials(url, user_id, username, session);
 
             if(rememberMe) {
-                ((ChatApplication) WelcomeActivity.this.getApplication()).rememberCredentials();
+                chatApplication.rememberCredentials();
             }
 
             Intent menuIntent = new Intent(WelcomeActivity.this, MenuActivity.class);
