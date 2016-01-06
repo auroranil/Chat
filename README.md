@@ -14,15 +14,15 @@ curl https://raw.githubusercontent.com/jos0003/Chat/master/setup_server.sh | sh
 git clone https://github.com/jos0003/Chat
 ```
 * Install these dependencies:
- * python
- * pip packages
-  * flask
-  * flask-bcrypt
-  * flask-socketio
-  * sqlalchemy
-  * flask-sqlalchemy
- * bcrypt (flask-bcrypt needs this)
- * sqlite for portable database (easier to setup than mysql)
+  * python
+  * pip packages
+    * flask
+    * flask-bcrypt
+    * flask-socketio
+    * sqlalchemy
+    * flask-sqlalchemy
+  * bcrypt (flask-bcrypt needs this)
+  * sqlite for portable database (easier to setup than mysql)
 * Run `python /path/to/Chat/server_app` to start the server.
 
 ### Chat client: Web
