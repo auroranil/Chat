@@ -45,48 +45,49 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 
 ## DONE:
 * Caching 
- * Store session locally (using shared preferences with flag Context.MODE_PRIVATE)
- * Resume session automatically when remember me checkbox is checked and user returns to app
+  * Store session locally (using shared preferences with flag Context.MODE_PRIVATE)
+  * Resume session automatically when remember me checkbox is checked and user returns to app
 * Rooms
- * Public rooms (display a list of rooms to join, and a edittext and button to host a room)
+  * Public rooms (display a list of rooms to join, and a edittext and button to host a room)
 * Menu
- * Tabs in MenuActivity to display which fragment the user is on (rooms or friends)
+  * Tabs in MenuActivity to display which fragment the user is on (rooms or friends)
 * Database
- * Friends list structure in database
+  * Friends list structure in database
 * User
- * User profile (username, status, joined date, last active date, is online)
+  * User profile (username, status, joined date, last active date, is online)
 * Friends
- * Ability to add (via requests and accepting requests) and remove friends
- * Show friends in listview by fetching it from database and storing them in an adapter
+  * Ability to add (via requests and accepting requests) and remove friends
+  * Show friends in listview by fetching it from database and storing them in an adapter
 
 ## TODO:
 * Friends
- * Show friend requests within the same listview
- * Private message chat to a single friend
- * Block list
+  * Show friend requests within the same listview
+  * Private message chat to a single friend
+  * Block list
 * Delete access
- * Ability to delete room
- * Ability to delete account
+  * Ability to delete room
+  * Ability to delete account
 * Caching 
- * Messages
- * Rooms
- * Friends
+  * Messages
+  * Rooms
+  * Friends
 * Communication
- * Replace API HTTP POST requests with RESTful API requests
- * Create a class that abstracts code dealing with JSON with AsyncTask
+  * Replace API HTTP POST requests with RESTful API requests
+  * Create a class that abstracts code dealing with JSON with AsyncTask
+  * Ensure message delivery
 * Rooms
- * Private rooms (request to join, join with password)
- * Able to search a room
- * Vote rooms
+  * Private rooms (request to join, join with password)
+  * Able to search a room
+  * Vote rooms
 * Chat
- * Show where people have read up to (like in google+ hangouts)
+  * Show where people have read up to (like in google+ hangouts)
 * Web
- * Replicate android features onto the web application
+  * Replicate android features onto the web application
 * User
- * Able to edit and save user bio
- * Able to recover by using email address (optional)
- * Show user activity in user profile
+  * Able to edit and save user bio
+  * Able to recover by using email address (optional)
+  * Show user activity in user profile
 * Welcome screen
- * Dynamically form-validate welcomeActivity as credentials are being entered.
+  * Dynamically form-validate welcomeActivity as credentials are being entered.
 * Server
- * Use daemon instead of using screen to run the server.
+  * Use daemon instead of using screen to run the server.
