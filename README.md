@@ -24,6 +24,7 @@ git clone https://github.com/jos0003/Chat
  * bcrypt (flask-bcrypt needs this)
  * sqlite for portable database (easier to setup than mysql)
 * Run `python /path/to/Chat/server_app` to start the server.
+
 ### Chat client: Web
 (Currently work in progress)
 
@@ -35,7 +36,7 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 
 ## Run Chat server
 * Run `python /path/to/Chat/server_app` to start the server.
- * Use `screen` if you want to run the server without staying logged in to a terminal.
+ * Use `screen` or `tmux` if you want to run the server without staying logged in to a terminal.
 
 ## ALWAYS TODO:
 * Refactor code
