@@ -5,6 +5,7 @@
 /android_app/.DS_Store
 /android_app/build
 /server_app/config.py
+/server_app/log
 *.db
 *.pyc
 *.log

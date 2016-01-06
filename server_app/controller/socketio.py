@@ -6,7 +6,7 @@ from model import *
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, disconnect
 
 import functools
- 
+
 def authenticated_only_socketio(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs): 

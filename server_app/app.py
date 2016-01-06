@@ -10,6 +10,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 main = Blueprint('main', __name__)
+app.register_blueprint(main)
 
 # configuration
 try:
@@ -39,3 +40,4 @@ bcrypt = Bcrypt(app)
 socketio = SocketIO(app)
 
 from controller import *
+
