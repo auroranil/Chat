@@ -2,22 +2,40 @@
 A simple chat application for android with a python flask server as the backend.
 
 ## Setup
-* Run this command to clone the repository and get the Chat server up and running.
-        
-        curl https://raw.githubusercontent.com/jos0003/Chat/master/setup_server.sh | sh
-        
+### Chat server: Ubuntu
+Run this command to clone the repository, install dependencies, and get the Chat server up and running.
+```
+curl https://raw.githubusercontent.com/jos0003/Chat/master/setup_server.sh | sh
+```
+
+### Chat server: Other operating systems
+* Clone the repository
+```
+git clone https://github.com/jos0003/Chat
+```
+* Install these dependencies:
+ * python
+ * pip packages
+  * flask
+  * flask-bcrypt
+  * flask-socketio
+  * sqlalchemy
+  * flask-sqlalchemy
+ * bcrypt (flask-bcrypt needs this)
+ * sqlite for portable database (easier to setup than mysql)
+* Run `python /path/to/Chat/server_app` to start the server.
+### Chat client: Web
+(Currently work in progress)
+
+Once Chat server is running, Chat client is accessible via a web browser by heading to `http://localhost:<port>`
+
+### Chat client: Android 
 * Open `android_app` gradle project in either Android Studio or Eclipse with the gradle plugin.
 * Install android application on your phone and run the app.
 
-## Dependencies
-* pip packages
- * flask
- * flask-bcrypt
- * flask-socketio
- * sqlalchemy
- * flask-sqlalchemy
-* bcrypt (flask-bcrypt needs this)
-* sqlite for portable database (easier to setup than mysql)
+## Run Chat server
+* Run `python /path/to/Chat/server_app` to start the server.
+ * Use `screen` if you want to run the server without staying logged in to a terminal.
 
 ## ALWAYS TODO:
 * Refactor code
@@ -69,3 +87,5 @@ A simple chat application for android with a python flask server as the backend.
  * Show user activity in user profile
 * Welcome screen
  * Dynamically form-validate welcomeActivity as credentials are being entered.
+* Server
+ * Use daemon instead of using screen to run the server.
