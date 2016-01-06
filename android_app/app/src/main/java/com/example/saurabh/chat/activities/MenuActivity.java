@@ -29,6 +29,7 @@ import com.example.saurabh.chat.ChatApplication;
 import com.example.saurabh.chat.R;
 import com.example.saurabh.chat.fragments.FriendsListFragment;
 import com.example.saurabh.chat.fragments.RoomsFragment;
+import com.example.saurabh.chat.model.User;
 import com.example.saurabh.chat.network.CreateRoomAsyncTask;
 import com.example.saurabh.chat.network.Logout;
 import com.example.saurabh.chat.utilities.CenteredImageSpan;
@@ -37,10 +38,7 @@ import com.example.saurabh.chat.utilities.CenteredImageSpan;
 public class MenuActivity extends AppCompatActivity {
     private String username, session;
     private int user_id = -1;
-    RoomsFragment roomsFragment;
-    FriendsListFragment friendsListFragment;
-    private CoordinatorLayout coordinatorLayout;
-    private FloatingActionButton fab;
+    Fragment roomsFragment, friendsListFragment;
     private Intent intent;
 
     @Override
@@ -51,9 +49,10 @@ public class MenuActivity extends AppCompatActivity {
         intent = getIntent();
 
         ChatApplication chatApplication = (ChatApplication) MenuActivity.this.getApplication();
-        username = chatApplication.getUsername();
-        user_id = chatApplication.getUserID();
-        session = chatApplication.getSession();
+        User user = chatApplication.getUser();
+        username = user.getUsername();
+        user_id = user.getUserID();
+        session = user.getSession();
 
         roomsFragment = new RoomsFragment();
         friendsListFragment = new FriendsListFragment();
@@ -64,7 +63,7 @@ public class MenuActivity extends AppCompatActivity {
         roomsFragment.setArguments(fragmentArguments);
         friendsListFragment.setArguments(fragmentArguments);
 
-        CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(getSupportFragmentManager(), roomsFragment);
+        CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(getSupportFragmentManager());
 
         ViewPager mViewPager = (ViewPager) findViewById(R.id.pager_menu);
         mViewPager.setAdapter(mCollectionPagerAdapter);
@@ -73,7 +72,7 @@ public class MenuActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         if(chatApplication.isLoggedIn() && intent.getBooleanExtra("returning user", false)) {
-            coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout_menu);
+            CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout_menu);
 
             Snackbar snackbar = Snackbar
                     .make(coordinatorLayout, "Signed in as " + username, Snackbar.LENGTH_LONG)
@@ -87,7 +86,7 @@ public class MenuActivity extends AppCompatActivity {
             snackbar.show();
         }
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,12 +182,8 @@ public class MenuActivity extends AppCompatActivity {
     class CollectionPagerAdapter extends FragmentPagerAdapter {
         private static final int FRAGMENT_ROOMS = 0, FRAGMENT_FRIENDS = 1;
 
-        RoomsFragment roomsFragment;
-
-        public CollectionPagerAdapter(FragmentManager fm, RoomsFragment roomsFragment) {
+        public CollectionPagerAdapter(FragmentManager fm) {
             super(fm);
-
-            this.roomsFragment = roomsFragment;
         }
 
         @Override

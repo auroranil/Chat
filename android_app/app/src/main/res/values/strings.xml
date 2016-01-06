@@ -44,6 +44,9 @@
     <string name="became_friends">Became friends with you %s</string>
     <string name="block_user">Block user</string>
 
+    <string name="is_typing"> is typing&#8230;</string>
+    <string name="are_typing"> are typing&#8230;</string>
+
     <string-array
         name="message_dialog_choice_list">
         <item>Copy text</item>

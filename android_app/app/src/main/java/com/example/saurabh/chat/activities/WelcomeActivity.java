@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.saurabh.chat.ChatApplication;
 import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.model.User;
 import com.example.saurabh.chat.network.JSONParser;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
@@ -178,7 +179,8 @@ public class WelcomeActivity extends AppCompatActivity implements Validator.Vali
                 return;
             }
 
-            chatApplication.setCredentials(url, user_id, username, session);
+            chatApplication.setURL(url);
+            chatApplication.setUser(new User(user_id, username, session));
 
             if(rememberMe) {
                 chatApplication.rememberCredentials();
@@ -278,7 +280,8 @@ public class WelcomeActivity extends AppCompatActivity implements Validator.Vali
                 return;
             }
 
-            chatApplication.setCredentials(url, user_id, username, session);
+            chatApplication.setURL(url);
+            chatApplication.setUser(new User(user_id, username, session));
 
             if(rememberMe) {
                 chatApplication.rememberCredentials();

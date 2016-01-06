@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.saurabh.chat.ChatApplication;
 import com.example.saurabh.chat.R;
 import com.example.saurabh.chat.layouts.StatusLayout;
+import com.example.saurabh.chat.model.User;
 import com.example.saurabh.chat.network.JSONParser;
 import com.example.saurabh.chat.utilities.Utility;
 
@@ -50,6 +51,9 @@ public class UserProfileActivity extends AppCompatActivity {
     RefreshTimeAgoTimerTask refreshTimeAgoTimerTask;
     Date createdDate, lastActiveDate;
 
+    ChatApplication chatApplication;
+    User user;
+
     Resources res;
 
     @Override
@@ -65,13 +69,16 @@ public class UserProfileActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        url = ((ChatApplication) getApplication()).getURL();
+        chatApplication = (ChatApplication) getApplication();
+
+        url = chatApplication.getURL();
+        user = chatApplication.getUser();
 
         inputJSON = new JSONObject();
         try {
-            inputJSON.put("username", ((ChatApplication) getApplication()).getUsername());
-            inputJSON.put("user_id", ((ChatApplication) getApplication()).getUserID());
-            inputJSON.put("session", ((ChatApplication) getApplication()).getSession());
+            inputJSON.put("username", user.getUsername());
+            inputJSON.put("user_id", user.getUserID());
+            inputJSON.put("session", user.getSession());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -79,11 +86,11 @@ public class UserProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if(intent.hasExtra("user_id")) {
             look_up_user_id = intent.getIntExtra("user_id", -1);
-            if(look_up_user_id == ((ChatApplication) getApplication()).getUserID()) {
+            if(look_up_user_id == user.getUserID()) {
                 is_self = true;
             }
         } else {
-            look_up_user_id = ((ChatApplication) getApplication()).getUserID();
+            look_up_user_id = user.getUserID();
             is_self = true;
         }
 

@@ -1,8 +1,7 @@
 package com.example.saurabh.chat.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -21,8 +20,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.saurabh.chat.ChatApplication;
-import com.example.saurabh.chat.adapters.MessageAdapter;
 import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.adapters.MessageAdapter;
+import com.example.saurabh.chat.model.User;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.IO;
@@ -48,12 +48,8 @@ public class ChatActivity extends AppCompatActivity {
     private boolean history_lock = false;
     private String earliest_datetime_utc;
 
-    private int room_id;
-
     private final ArrayList<String> usersTyping = new ArrayList<>();
-
-    private SharedPreferences userSharedPreferences;
-    private Intent intent;
+    private Resources res;
 
     private JSONObject info;
     private Socket mSocket;
@@ -62,20 +58,21 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        res = getResources();
 
-        userSharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-        intent = getIntent();
+        Intent intent = getIntent();
         ChatApplication chatApplication = (ChatApplication) this.getApplication();
-        int user_id = chatApplication.getUserID();
-        String username = chatApplication.getUsername();
-        String session = chatApplication.getSession();
+        User user = chatApplication.getUser();
+        int user_id = user.getUserID();
+        String username = user.getUsername();
+        String session = user.getSession();
         String room_name = intent.getStringExtra("room_name");
         // TODO: deal with default value
-        room_id = intent.getIntExtra("room_id", -1);
+        int room_id = intent.getIntExtra("room_id", -1);
 
         ActionBar actionBar = getSupportActionBar();
 
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.setTitle("Room: " + room_name);
         }
 
@@ -95,7 +92,7 @@ public class ChatActivity extends AppCompatActivity {
             info.put("room_name", room_name);
             info.put("room_id", room_id);
             info.put("type", ROOM);
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -130,7 +127,7 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(adapter.getCount() == 0) {
+                if (adapter.getCount() == 0) {
                     return;
                 }
 
@@ -141,10 +138,10 @@ public class ChatActivity extends AppCompatActivity {
                     if (offset == 0) {
                         // reached the top:
                         Log.d("ChatActivity", "history_lock=" + history_lock);
-                        if(!history_lock) {
+                        if (!history_lock) {
                             try {
                                 JSONObject json = new JSONObject(info.toString());
-                                if(earliest_datetime_utc != null) {
+                                if (earliest_datetime_utc != null) {
                                     json.put("datetimeutc", earliest_datetime_utc);
                                 }
                                 mSocket.emit("fetch messages", json);
@@ -171,10 +168,10 @@ public class ChatActivity extends AppCompatActivity {
                 String message = txtMessage.getText().toString();
                 btnSend.setEnabled(!message.isEmpty());
 
-                if(!message.isEmpty() && !typing) {
+                if (!message.isEmpty() && !typing) {
                     typing = true;
                     mSocket.emit("typing", info);
-                } else if(message.isEmpty() && typing) {
+                } else if (message.isEmpty() && typing) {
                     typing = false;
                     mSocket.emit("stop typing", info);
                 }
@@ -192,7 +189,7 @@ public class ChatActivity extends AppCompatActivity {
                 txtMessage.setText("");
 
                 // Don't send message if string is empty
-                if(!msg.isEmpty()) {
+                if (!msg.isEmpty()) {
                     new SendMessageTask().execute(msg);
                 }
             }
@@ -273,16 +270,16 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String usersTypingStr = usersTyping.toString();
-                    usersTypingTextView.setText(usersTypingStr.substring(1, usersTypingStr.length()-1));
+                    usersTypingTextView.setText(usersTypingStr.substring(1, usersTypingStr.length() - 1));
 
-                    if(usersTyping.size() == 1) {
+                    if (usersTyping.size() == 1) {
                         // show view
                         footerView.setVisibility(View.VISIBLE);
-                        isTypingTextView.setText(" is typing...");
+                        isTypingTextView.setText(res.getString(R.string.is_typing));
                     }
 
-                    if(usersTyping.size() == 2) {
-                        isTypingTextView.setText(" are typing...");
+                    if (usersTyping.size() == 2) {
+                        isTypingTextView.setText(res.getString(R.string.are_typing));
                     }
                 }
             });
@@ -294,18 +291,18 @@ public class ChatActivity extends AppCompatActivity {
         public void call(Object... args) {
             usersTyping.remove((String) args[0]);
 
-            if(usersTyping.isEmpty()) {
+            if (usersTyping.isEmpty()) {
                 ChatActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         String usersTypingStr = usersTyping.toString();
-                        usersTypingTextView.setText(usersTypingStr.substring(1, usersTypingStr.length()-1));
+                        usersTypingTextView.setText(usersTypingStr.substring(1, usersTypingStr.length() - 1));
 
-                        if(usersTyping.size() == 1) {
-                            isTypingTextView.setText(" is typing...");
+                        if (usersTyping.size() == 1) {
+                            isTypingTextView.setText(res.getString(R.string.is_typing));
                         }
 
-                        if(usersTyping.isEmpty()) {
+                        if (usersTyping.isEmpty()) {
                             // hide view
                             footerView.setVisibility(View.INVISIBLE);
                         }
@@ -343,11 +340,11 @@ public class ChatActivity extends AppCompatActivity {
                 json = (JSONObject) args[0];
                 arr = json.getJSONArray("history");
                 Log.d("arr size", Integer.toString(arr.length()));
-                if(json.has("earliest_datetimeutc")) {
+                if (json.has("earliest_datetimeutc")) {
                     earliest_datetime_utc = json.getString("earliest_datetimeutc");
                 }
-                for(int i = 0; i < arr.length(); i++) {
-                    Log.i("Index",  Integer.toString(i));
+                for (int i = 0; i < arr.length(); i++) {
+                    Log.i("Index", Integer.toString(i));
                     items.add(new MessageAdapter.MessageItem(arr.getJSONObject(i).getInt("user_id"), arr.getJSONObject(i).getString("username"), arr.getJSONObject(i).getString("message"), arr.getJSONObject(i).getString("datetimeutc")));
                 }
             } catch (JSONException e) {
@@ -361,7 +358,7 @@ public class ChatActivity extends AppCompatActivity {
                 public void run() {
                     adapter.prependItems(items);
                     // if we haven't reached the start of the messages, release history lock
-                    if(items.size() > 0) history_lock = false;
+                    if (items.size() > 0) history_lock = false;
                 }
             });
         }
@@ -375,7 +372,7 @@ public class ChatActivity extends AppCompatActivity {
             try {
                 inputJson = new JSONObject(info.toString());
                 inputJson.put("message", args[0]);
-            } catch(JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
             }
@@ -387,7 +384,7 @@ public class ChatActivity extends AppCompatActivity {
                     ChatActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(ack_message != null)
+                            if (ack_message != null)
                                 Log.i("socket", ack_message);
                         }
                     });
