@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class FetchFriendsAsyncTask extends AsyncTask<String, String, ArrayList<FriendsAdapter.FriendsItem>> {
+public class FetchFriendsAsyncTask extends AsyncTask<String, String, ArrayList<Object>> {
 
     FriendsListFragment friendsListFragment;
     String username, session;
@@ -27,7 +27,7 @@ public class FetchFriendsAsyncTask extends AsyncTask<String, String, ArrayList<F
     }
 
     @Override
-    protected ArrayList<FriendsAdapter.FriendsItem> doInBackground(String... params) {
+    protected ArrayList<Object> doInBackground(String... params) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("username", username);
@@ -41,7 +41,7 @@ public class FetchFriendsAsyncTask extends AsyncTask<String, String, ArrayList<F
         JSONParser jsonParser = new JSONParser();
         JSONObject outputJSON = jsonParser.getJSONFromUrl(((ChatApplication) friendsListFragment.getActivity().getApplication()).getURL() + "/fetchfriends", jsonObject);
         if(outputJSON == null) return null;
-        ArrayList<FriendsAdapter.FriendsItem> friends;
+        ArrayList<Object> friends;
         try {
             JSONArray friendsJSONArray = outputJSON.getJSONArray("friends");
             JSONObject friend;
@@ -50,9 +50,16 @@ public class FetchFriendsAsyncTask extends AsyncTask<String, String, ArrayList<F
             for(int i = 0; i < friendsJSONArray.length(); i++) {
                 friend = friendsJSONArray.getJSONObject(i);
                 if(!friend.getBoolean("request")) {
-                    FriendsAdapter.FriendsItem item = new FriendsAdapter.FriendsItem(
+                    FriendsAdapter.FriendItem item = new FriendsAdapter.FriendItem(
                             friend.getString("username"),
                             friend.getString("date"));
+
+                    friends.add(item);
+                } else {
+                    FriendsAdapter.FriendRequestItem item = new FriendsAdapter.FriendRequestItem(
+                            friend.getString("username")
+                    );
+
                     friends.add(item);
                 }
             }
@@ -65,7 +72,7 @@ public class FetchFriendsAsyncTask extends AsyncTask<String, String, ArrayList<F
     }
 
     @Override
-    protected void onPostExecute(final ArrayList<FriendsAdapter.FriendsItem> friends) {
+    protected void onPostExecute(final ArrayList<Object> friends) {
         friendsListFragment.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

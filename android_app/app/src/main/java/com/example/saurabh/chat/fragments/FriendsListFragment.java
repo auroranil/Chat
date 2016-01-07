@@ -6,7 +6,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.saurabh.chat.R;
 import com.example.saurabh.chat.adapters.FriendsAdapter;
@@ -37,6 +39,12 @@ public class FriendsListFragment extends Fragment {
         statusLayout.setLoading();
 
         friendsListView = (ListView) v.findViewById(R.id.listView_friends);
+        friendsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(), "Clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         friendsAdapter = new FriendsAdapter(getActivity());
         friendsListView.setAdapter(friendsAdapter);
@@ -60,9 +68,6 @@ public class FriendsListFragment extends Fragment {
                 swipeContainer.setRefreshing(true);
             }
         });
-
-
-        friendsListView = (ListView) v.findViewById(R.id.listView_friends);
         swipeContainer.setVisibility(View.GONE);
 
         return v;

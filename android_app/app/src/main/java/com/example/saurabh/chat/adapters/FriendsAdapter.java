@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class FriendsAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
+    private static final int TYPE_FRIEND = 0, TYPE_FRIEND_REQUEST = 1;
+    private int type;
 
     private final Activity activity;
     private final ArrayList<Object> mArrayList = new ArrayList<>();
@@ -66,26 +69,63 @@ public class FriendsAdapter extends BaseAdapter implements AdapterView.OnItemCli
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(mArrayList.get(position) instanceof FriendItem) {
+            type = TYPE_FRIEND;
+        } else if(mArrayList.get(position) instanceof FriendRequestItem) {
+            type = TYPE_FRIEND_REQUEST;
+        }
+
+        return type;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(activity);
 
-        final FriendsViewHolder friendsViewHolder;
-        if(convertView == null) {
-            convertView = inflater.inflate(R.layout.listview_friend, parent, false);
+        switch (getItemViewType(position)) {
+            case TYPE_FRIEND:
+                final FriendViewHolder friendViewHolder;
+                if (convertView == null) {
+                    convertView = inflater.inflate(R.layout.listview_friend, parent, false);
 
-            friendsViewHolder = new FriendsViewHolder();
-            friendsViewHolder.usernameText = (TextView) convertView.findViewById(R.id.txt_username);
-            friendsViewHolder.becameFriendsText = (TextView) convertView.findViewById(R.id.txt_became_friends);
-            convertView.setTag(friendsViewHolder);
-        } else {
-            friendsViewHolder = (FriendsViewHolder) convertView.getTag();
-        }
+                    friendViewHolder = new FriendViewHolder();
+                    friendViewHolder.usernameText = (TextView) convertView.findViewById(R.id.txt_username);
+                    friendViewHolder.becameFriendsText = (TextView) convertView.findViewById(R.id.txt_became_friends);
+                    convertView.setTag(friendViewHolder);
+                } else {
+                    friendViewHolder = (FriendViewHolder) convertView.getTag();
+                }
 
-        FriendsItem friendsItem = (FriendsItem) getItem(position);
-        friendsViewHolder.usernameText.setText(friendsItem.getUsername());
-        final Date createdDate = Utility.parseDateAsUTC(friendsItem.getDate());
-        if(createdDate != null) {
-            friendsViewHolder.becameFriendsText.setText(activity.getResources().getString(R.string.became_friends, Utility.getTimeAgo(createdDate.getTime())));
+                FriendItem friendItem = (FriendItem) getItem(position);
+                friendViewHolder.usernameText.setText(friendItem.getUsername());
+                final Date createdDate = Utility.parseDateAsUTC(friendItem.getDate());
+                if (createdDate != null) {
+                    friendViewHolder.becameFriendsText.setText(activity.getResources().getString(R.string.became_friends, Utility.getTimeAgo(createdDate.getTime())));
+                }
+                break;
+            case TYPE_FRIEND_REQUEST:
+                final FriendRequestViewHolder friendRequestViewHolder;
+                if (convertView == null) {
+                    convertView = inflater.inflate(R.layout.listview_friend_request, parent, false);
+
+                    friendRequestViewHolder = new FriendRequestViewHolder();
+                    friendRequestViewHolder.usernameText = (TextView) convertView.findViewById(R.id.txt_username);
+                    convertView.setTag(friendRequestViewHolder);
+                } else {
+                    friendRequestViewHolder = (FriendRequestViewHolder) convertView.getTag();
+                }
+
+                FriendRequestItem friendRequestItem = (FriendRequestItem) getItem(position);
+                friendRequestViewHolder.usernameText.setText(friendRequestItem.getUsername());
+                break;
+            default:
+                break;
         }
 
         return convertView;
@@ -96,10 +136,10 @@ public class FriendsAdapter extends BaseAdapter implements AdapterView.OnItemCli
         Toast.makeText(activity, "Item: " + position, Toast.LENGTH_SHORT).show();
     }
 
-    public static class FriendsItem {
+    public static class FriendItem {
         private final String username, date;
 
-        public FriendsItem(String username, String date) {
+        public FriendItem(String username, String date) {
             this.username = username;
             this.date = date;
         }
@@ -112,8 +152,26 @@ public class FriendsAdapter extends BaseAdapter implements AdapterView.OnItemCli
         }
     }
 
-    public static class FriendsViewHolder {
+    public static class FriendRequestItem {
+        private final String username;
+
+        public FriendRequestItem(String username) {
+            this.username = username;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+    }
+
+    public static class FriendViewHolder {
         public TextView usernameText;
         public TextView becameFriendsText;
+    }
+
+    public static class FriendRequestViewHolder {
+        public TextView usernameText;
+        public Button acceptBtn;
+        public Button ignoreBtn;
     }
 }

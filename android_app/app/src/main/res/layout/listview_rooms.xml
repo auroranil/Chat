@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
     android:padding="10dp"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
@@ -9,10 +11,7 @@
         android:layout_height="wrap_content"
         android:text="Room name"
         android:textSize="20sp"
-        android:id="@+id/txt_room_name"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:id="@+id/txt_room_name" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,5 +29,18 @@
         android:layout_alignTop="@+id/txt_username"
         android:layout_toRightOf="@+id/txt_username"
         android:layout_toEndOf="@+id/txt_username" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/vertical_ellipsis"
+        android:textSize="18sp"
+        style="?android:attr/borderlessButtonStyle"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:id="@+id/button"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
