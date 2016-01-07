@@ -101,9 +101,6 @@ public class MenuActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_menu, menu);
 
-        // personalise menu item for viewing user's own profile
-        menu.findItem(R.id.action_user_profile).setTitle("View " + username + "'s profile");
-
         return true;
     }
 

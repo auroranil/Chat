@@ -1,46 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="10dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:padding="10dp"
         android:layout_height="wrap_content"
-        android:text="Room name"
-        android:textSize="20sp"
-        android:id="@+id/txt_room_name" />
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/created_by_user"
-        android:id="@+id/txt_username"
-        android:layout_below="@+id/txt_room_name" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Room name"
+            android:textSize="20sp"
+            android:id="@+id/txt_room_name" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/timeAgo"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_alignTop="@+id/txt_username"
-        android:layout_toRightOf="@+id/txt_username"
-        android:layout_toEndOf="@+id/txt_username" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/created_by_user"
+            android:id="@+id/txt_created_by_user" />
+
+    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:text="@string/vertical_ellipsis"
         android:textSize="18sp"
         style="?android:attr/borderlessButtonStyle"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:id="@+id/button"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:minWidth="64dp"
+        android:id="@+id/button" />
 
-</RelativeLayout>
+</LinearLayout>

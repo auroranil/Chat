@@ -78,8 +78,7 @@ public class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickL
 
             roomViewHolder = new RoomViewHolder();
             roomViewHolder.roomNameText = (TextView) convertView.findViewById(R.id.txt_room_name);
-            roomViewHolder.usernameText = (TextView) convertView.findViewById(R.id.txt_username);
-            roomViewHolder.timeAgoText = (TextView) convertView.findViewById(R.id.timeAgo);
+            roomViewHolder.createdByUserText = (TextView) convertView.findViewById(R.id.txt_created_by_user);
             convertView.setTag(roomViewHolder);
         } else {
             roomViewHolder = (RoomViewHolder) convertView.getTag();
@@ -87,26 +86,10 @@ public class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickL
 
         RoomItem roomItem = (RoomItem) getItem(position);
         roomViewHolder.roomNameText.setText(roomItem.getRoomName());
-        roomViewHolder.usernameText.setText(res.getString(R.string.created_by_user, roomItem.getUsername()));
 
-        final Date roomCreatedDate = Utility.parseDateAsUTC(roomItem.getDate());
-        if(roomCreatedDate != null) {
-            roomViewHolder.timeAgoText.setText(Utility.getTimeAgo(roomCreatedDate.getTime()));
-
-//            // Update time ago text every 30 seconds, which is half of the smallest unit of time:
-//            // a minute.
-//            new Timer().scheduleAtFixedRate(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    activity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            roomViewHolder.timeAgoText.setText(Utility.getTimeAgo(roomCreatedDate.getTime()));
-//                            System.out.println("test");
-//                        }
-//                    });
-//                }
-//            }, 0, 1000);
+        final Date createdDate = Utility.parseDateAsUTC(roomItem.getDate());
+        if(createdDate != null) {
+            roomViewHolder.createdByUserText.setText(res.getString(R.string.created_by_user, roomItem.getUsername() + " " + Utility.getTimeAgo(createdDate.getTime())));
         }
 
         return convertView;
@@ -147,7 +130,6 @@ public class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickL
 
     public static class RoomViewHolder {
         public TextView roomNameText;
-        public TextView usernameText;
-        public TextView timeAgoText;
+        public TextView createdByUserText;
     }
 }
