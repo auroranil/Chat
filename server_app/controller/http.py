@@ -4,7 +4,7 @@ from app import main, app
 from model import *
 
 import sqlalchemy
-from flask import request, render_template
+from flask import request, render_template, jsonify
 
 from datetime import datetime, timedelta
 import functools
@@ -13,7 +13,7 @@ import json
 def authenticated_only_http(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
-        data = json.loads(request.data)
+        data = request.data
         user_id = data.get("user_id")
         session = data.get("session")
         
@@ -51,10 +51,10 @@ def login():
                 session = user.authenticate(password, UserSession)
                 if session != None:
                     logging.info("%r has logged in." % user)
-                    return json.dumps({"authenticated": True, "user_id": user.id, "session": session})
-                return json.dumps({"authenticated": False, "reason": "Either session is invalid or session has expired."})
-            return json.dumps({"authenticated": False, "reason": "Username does not exist."})
-        return json.dumps({"authenticated": False, "reason": "Failed to collect credentials."})
+                    return jsonify({"authenticated": True, "user_id": user.id, "session": session})
+                return jsonify({"authenticated": False, "reason": "Either session is invalid or session has expired."})
+            return jsonify({"authenticated": False, "reason": "Username does not exist."})
+        return jsonify({"authenticated": False, "reason": "Failed to collect credentials."})
     
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -69,8 +69,8 @@ def signup():
             session = user.register(password, UserSession)
             if session != None:
                 logging.info("%r has signed up." % user)
-                return json.dumps({"registered": True, "user_id": user.id, "session": session})
-        return json.dumps({"registered": False})
+                return jsonify({"registered": True, "user_id": user.id, "session": session})
+        return jsonify({"registered": False})
 
 @main.route('/fetchrooms', methods=['POST'])
 @authenticated_only_http
@@ -90,7 +90,7 @@ def fetch_rooms():
             "date": str(room.created_date)
         })
 
-    return json.dumps({"rooms": rooms})
+    return jsonify({"rooms": rooms})
 
 @main.route('/createroom', methods=['POST'])
 @authenticated_only_http
@@ -107,8 +107,8 @@ def create_room():
             # code, msg = e.orig
             c = {"created": False}
             return c
-        return json.dumps({"created": True, "room_id": room.id})
-    return json.dumps({"created": False})
+        return jsonify({"created": True, "room_id": room.id})
+    return jsonify({"created": False})
 
 @main.route('/fetchfriends', methods=['POST'])
 @authenticated_only_http
@@ -137,7 +137,7 @@ def fetch_friends():
             "date": str(friend.created_date)
         })
 
-    return json.dumps({"friends": friends})
+    return jsonify({"friends": friends})
 
 @main.route('/user/<other_user_id>', methods=['POST'])
 @authenticated_only_http
@@ -172,8 +172,8 @@ def query_user(other_user_id):
         outputDict["has_requested_to_be_friends"] = friend is not None and friend.request and friend.req_user_id == int(other_user_id)
         outputDict["has_sent_friend_request"] = friend is not None and friend.request and friend.res_user_id == int(other_user_id)
     
-        return json.dumps(outputDict)
-    return json.dumps({"error": "User ID %r does not exist." % other_user_id})
+        return jsonify(outputDict)
+    return jsonify({"error": "User ID %r does not exist." % other_user_id})
 
 @main.route('/friend', methods=['POST'])
 @authenticated_only_http
@@ -202,24 +202,24 @@ def friend():
                     # Remove friend request
                     logging.debug("Removing friend request...")
                     friend.remove()
-                    return json.dumps({"success": True})
+                    return jsonify({"success": True})
                 elif friend.res_user_id == user_id:
                     # Accept friend request
                     logging.debug("Accepting friend request...")
                     friend.request = False
                     friend.update()
-                    return json.dumps({"success": True})
+                    return jsonify({"success": True})
             else:
                 # Remove friend
                 logging.debug("Removing friend...")
                 friend.remove()
-                return json.dumps({"success": True})
+                return jsonify({"success": True})
         else:
             logging.debug("Adding friend request...")
             friend = Friend(user_id, friend_user_id)
             friend.addAndCommit()
-            return json.dumps({"success": True})
-    return json.dumps({"error": "Same User ID %r when trying to send friend request, accept friend request, or remove friends." % user_id})
+            return jsonify({"success": True})
+    return jsonify({"error": "Same User ID %r when trying to send friend request, accept friend request, or remove friends." % user_id})
 
 @main.route('/logout', methods=['POST'])
 @authenticated_only_http
@@ -232,8 +232,8 @@ def logout():
             if user is not None:
                 logging.info("%s has logged out." % user)
                 user.remove_session(session, UserSession)
-                return json.dumps({"logged out": True})
-    return json.dumps({"logged out": False})
+                return jsonify({"logged out": True})
+    return jsonify({"logged out": False})
 
 @app.errorhandler(404)
 def page_not_found(e):
