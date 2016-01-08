@@ -5,8 +5,6 @@
     tools:context=".activities.ChatActivity">
 
     <ListView
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -29,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="User array"
+            android:text="@string/template_username"
             android:id="@+id/users_typing"
             android:textStyle="bold" />
 
@@ -37,36 +35,44 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text=" is typing..."
+            android:text="@string/is_typing"
             android:id="@+id/is_typing" />
     </LinearLayout>
 
     <LinearLayout
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
         android:layout_width="match_parent"
         android:id="@+id/layout_message_control"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
-        android:orientation="horizontal">
+        android:background="@drawable/bordertop"
+        android:orientation="vertical">
 
         <EditText
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_horizontal_margin"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:hint="Type a message..."
+            android:hint="@string/write_a_message"
+            android:background="@null"
             android:ems="10"
             android:id="@+id/txt_message" />
 
         <Button
-            style="?android:attr/buttonStyleSmall"
+            android:minWidth="0dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send"
+            android:layout_gravity="end"
+            android:background="@drawable/round_button"
             android:enabled="false"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:id="@+id/btn_send" />
 
     </LinearLayout>

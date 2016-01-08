@@ -177,16 +177,16 @@ public class MessageAdapter extends BaseAdapter {
                 if(username.equals(msg_item.getUsername())) {
                     messageViewHolder.message.setGravity(Gravity.END);
                     if (messageViewHolder.bg instanceof ShapeDrawable) {
-                        ((ShapeDrawable) messageViewHolder.bg).getPaint().setColor(Color.parseColor("#FFF8DC"));
+                        ((ShapeDrawable) messageViewHolder.bg).getPaint().setColor(Color.parseColor("#FFDDDDDD"));
                     } else if (messageViewHolder.bg instanceof GradientDrawable) {
-                        ((GradientDrawable) messageViewHolder.bg).setColor(Color.parseColor("#FFF8DC"));
+                        ((GradientDrawable) messageViewHolder.bg).setColor(Color.parseColor("#FFDDDDDD"));
                     }
                 } else {
                     messageViewHolder.message.setGravity(Gravity.START);
                     if (messageViewHolder.bg instanceof ShapeDrawable) {
-                        ((ShapeDrawable) messageViewHolder.bg).getPaint().setColor(Color.parseColor("#FFFFFF"));
+                        ((ShapeDrawable) messageViewHolder.bg).getPaint().setColor(Color.parseColor("#FFFFFFFF"));
                     } else if (messageViewHolder.bg instanceof GradientDrawable) {
-                        ((GradientDrawable) messageViewHolder.bg).setColor(Color.parseColor("#FFFFFF"));
+                        ((GradientDrawable) messageViewHolder.bg).setColor(Color.parseColor("#FFFFFFFF"));
                     }
                 }
 

@@ -44,6 +44,7 @@
 
     <string name="is_typing"> is typing&#8230;</string>
     <string name="are_typing"> are typing&#8230;</string>
+    <string name="write_a_message">Write a message</string>
 
     <string-array
         name="message_dialog_choice_list">

@@ -13,7 +13,7 @@ import json
 def authenticated_only_http(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
-        data = request.data
+        data = json.loads(request.data)
         user_id = data.get("user_id")
         session = data.get("session")
         
