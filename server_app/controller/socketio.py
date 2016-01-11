@@ -57,26 +57,19 @@ def fetch_messages(data):
     messages = []
     
     room_id = data.get('room_id')
-    db_msg_list = Message.query.order_by(Message.id.desc()).filter_by(other_id=room_id, type=int(data.get('type')))
-    
-    if data.get("datetimeutc") is not None:
-        utc_time = datetime.datetime.strptime(data.get("datetimeutc"), "%Y-%m-%d %H:%M:%S")
-        db_msg_list = db_msg_list.filter(Message.date < utc_time)
-    
-    db_msg_list = db_msg_list.limit(25).all()
+    db_msg_list = Message.fetch(int(data.get('type')), room_id, int(data.get('before_msg_id', -1)))
     
     for message in db_msg_list:
         messages.append({
             "username": User.query.get(message.user_id).username,
             "user_id": message.user_id,
+            "message_id": message.id,
             "message": message.message,
             "datetimeutc": str(message.date)
         })
     
     messages.reverse()
     history = {"history": messages}
-    if(len(messages) > 0):
-         history["earliest_datetimeutc"] = messages[0]["datetimeutc"]
     
     emit("history", history)
 
@@ -101,6 +94,7 @@ def handle_sent_message(data):
     global User, Message, Room
     message = Message(data.get('user_id'), data.get('message'), data.get('type'), data.get('room_id'))
     message.commit()
+    data["message_id"] = message.id
     data["datetimeutc"] = str(message.date)
     
     emit("received message", data, room="room" + str(data.get('room_id')))

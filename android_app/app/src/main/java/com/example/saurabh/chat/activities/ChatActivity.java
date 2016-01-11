@@ -45,8 +45,8 @@ public class ChatActivity extends AppCompatActivity {
     private TextView usersTypingTextView;
     private TextView isTypingTextView;
     private boolean typing = false;
+    private boolean first_history = true;
     private boolean history_lock = false;
-    private String earliest_datetime_utc;
 
     private final ArrayList<String> usersTyping = new ArrayList<>();
     private Resources res;
@@ -135,14 +135,14 @@ public class ChatActivity extends AppCompatActivity {
                     // check if we reached the top or bottom of the list
                     View v = listViewMessages.getChildAt(0);
                     int offset = (v == null) ? 0 : v.getTop();
-                    if (offset == 0) {
+                    if (offset < 2) {
                         // reached the top:
                         Log.d("ChatActivity", "history_lock=" + history_lock);
                         if (!history_lock) {
                             try {
                                 JSONObject json = new JSONObject(info.toString());
-                                if (earliest_datetime_utc != null) {
-                                    json.put("datetimeutc", earliest_datetime_utc);
+                                if(adapter.getCount() > 0) {
+                                    json.put("before_msg_id", adapter.getFirstID());
                                 }
                                 mSocket.emit("fetch messages", json);
                                 history_lock = true;
@@ -236,22 +236,22 @@ public class ChatActivity extends AppCompatActivity {
         public void call(Object... args) {
             Log.i("message received", "a");
             JSONObject json;
-            int user_id = -1;
-            String username = "", message = "";
-            String datetimeutc = "";
+            int user_id = -1, message_id = -1;
+            String username = "", message_contents = "", datetimeutc = "";
             try {
                 json = (JSONObject) args[0];
 
                 user_id = json.getInt("user_id");
+                message_id = json.getInt("message_id");
                 username = json.getString("username");
-                message = json.getString("message");
+                message_contents = json.getString("message");
                 datetimeutc = json.getString("datetimeutc");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            final MessageAdapter.MessageItem msgItem = new MessageAdapter.MessageItem(user_id, username, message, datetimeutc);
-            Log.i("message", msgItem.toString());
+            final MessageAdapter.MessageItem msgItem = new MessageAdapter.MessageItem(message_id, user_id, username, message_contents, datetimeutc);
+
             ChatActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -340,12 +340,21 @@ public class ChatActivity extends AppCompatActivity {
                 json = (JSONObject) args[0];
                 arr = json.getJSONArray("history");
                 Log.d("arr size", Integer.toString(arr.length()));
-                if (json.has("earliest_datetimeutc")) {
-                    earliest_datetime_utc = json.getString("earliest_datetimeutc");
-                }
+                JSONObject jsonObject;
+
                 for (int i = 0; i < arr.length(); i++) {
                     Log.i("Index", Integer.toString(i));
-                    items.add(new MessageAdapter.MessageItem(arr.getJSONObject(i).getInt("user_id"), arr.getJSONObject(i).getString("username"), arr.getJSONObject(i).getString("message"), arr.getJSONObject(i).getString("datetimeutc")));
+                    jsonObject = arr.getJSONObject(i);
+
+                    items.add(
+                            new MessageAdapter.MessageItem(
+                                    jsonObject.getInt("message_id"),
+                                    jsonObject.getInt("user_id"),
+                                    jsonObject.getString("username"),
+                                    jsonObject.getString("message"),
+                                    jsonObject.getString("datetimeutc")
+                            )
+                    );
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -356,9 +365,29 @@ public class ChatActivity extends AppCompatActivity {
             ChatActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adapter.prependItems(items);
+                    if(first_history) {
+                        adapter.prependItems(items);
+                        first_history = false;
+                    } else {
+                        // https://stackoverflow.com/questions/22051556/maintain-scroll-position-when-adding-to-listview-with-reverse-endless-scrolling
+                        // https://stackoverflow.com/questions/8276128/retaining-position-in-listview-after-calling-notifydatasetchanged
+                        // save index and top position
+                        int index = listViewMessages.getFirstVisiblePosition();
+                        View v = listViewMessages.getChildAt(0);
+                        int top = (v == null) ? 0 : v.getTop();
+                        int oldCount = adapter.getCount();
+
+                        // notify dataset changed or re-assign adapter here
+                        adapter.prependItems(items);
+
+                        // restore the position of listview
+                        listViewMessages.setSelectionFromTop(index + adapter.getCount() - oldCount, top);
+                    }
+
                     // if we haven't reached the start of the messages, release history lock
                     if (items.size() > 0) history_lock = false;
+
+
                 }
             });
         }

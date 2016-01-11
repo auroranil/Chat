@@ -26,6 +26,17 @@ class Message(db.Model):
     def __repr__(self):
         return '<Message(user_id=%r, message=%r, type=%r, other_id=%r)>' % (self.user_id, self.message, self.type, self.other_id)
         
+    @classmethod
+    def fetch(cls, type_num, other_id, before_id):
+        result = cls.query.order_by(cls.id.desc()).filter_by(other_id=other_id, type=type_num)
+        
+        if not before_id < 0:
+            result = result.filter(cls.id < before_id)
+            
+        result = result.limit(25).all()
+        
+        return result
+        
     def commit(self):
         db.session.add(self)
         db.session.commit()

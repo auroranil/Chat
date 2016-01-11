@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class MessageAdapter extends BaseAdapter {
+    private static final String TAG = "adapters/MessageAdapter";
+
     private static final int TYPE_MESSAGE = 0;
     private static final int TYPE_BROADCAST = 1;
 
@@ -60,6 +62,10 @@ public class MessageAdapter extends BaseAdapter {
     public void addItems(final ArrayList<Object> items) {
         mArrayList.addAll(items);
         notifyDataSetChanged();
+    }
+
+    public int getFirstID() {
+        return ((MessageItem) mArrayList.get(0)).getID();
     }
 
     public void prependItems(final ArrayList<Object> items) {
@@ -251,16 +257,26 @@ public class MessageAdapter extends BaseAdapter {
     }
 
     public static class MessageItem {
+        private final int id;
         private final int user_id;
         private final String username;
         private final String message;
         private final String datetime_utc;
 
-        public MessageItem(int user_id, String username, String message, String datetime_utc) {
+        public MessageItem(int id, int user_id, String username, String message, String datetime_utc) {
+            this.id = id;
             this.user_id = user_id;
             this.username = username;
             this.message = message;
             this.datetime_utc = datetime_utc;
+        }
+
+        public int getID() {
+            return id;
+        }
+
+        public int getUserID() {
+            return user_id;
         }
 
         public String getUsername() {
