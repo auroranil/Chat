@@ -110,7 +110,7 @@ public class ChatActivity extends AppCompatActivity {
         txtMessage = (EditText) findViewById(R.id.txt_message);
 
         footerView = (LinearLayout) findViewById(R.id.layout_typing);
-        footerView.setVisibility(View.INVISIBLE);
+        footerView.setVisibility(View.GONE);
 
         usersTypingTextView = (TextView) footerView.findViewById(R.id.users_typing);
         isTypingTextView = (TextView) footerView.findViewById(R.id.is_typing);
@@ -304,7 +304,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         if (usersTyping.isEmpty()) {
                             // hide view
-                            footerView.setVisibility(View.INVISIBLE);
+                            footerView.setVisibility(View.GONE);
                         }
                     }
                 });

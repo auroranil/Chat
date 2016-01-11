@@ -3,18 +3,7 @@
     android:id="@+id/message"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin">
-
-    <TextView
-        android:id="@+id/username_display"
-        android:text="@string/template_username"
-        android:textSize="14sp"
-        android:layout_marginBottom="2dp"
-        android:layout_width = "wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold" />
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/message_display"
@@ -27,4 +16,11 @@
         android:layout_width = "wrap_content"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:id="@+id/details_display"
+        android:text="@string/template_details"
+        android:textSize="12sp"
+        android:textColor="#FF888888"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>

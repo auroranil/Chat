@@ -22,7 +22,9 @@ import android.widget.Toast;
 
 import com.example.saurabh.chat.R;
 import com.example.saurabh.chat.activities.UserProfileActivity;
+import com.example.saurabh.chat.utilities.Utility;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class MessageAdapter extends BaseAdapter {
@@ -37,6 +39,11 @@ public class MessageAdapter extends BaseAdapter {
 
     private final Context context;
     private final ArrayList<Object> mArrayList = new ArrayList<>();
+
+    LinearLayout.LayoutParams detailsLinearLayoutParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+    );
 
     private int type = TYPE_MESSAGE;
 
@@ -117,65 +124,97 @@ public class MessageAdapter extends BaseAdapter {
                 broadcastViewHolder.broadcastMsg.setText(broadcastItem.getMessage());
                 break;
             case TYPE_MESSAGE:
+                final MessageItem msg_item = (MessageItem) getItem(position);
                 final MessageViewHolder messageViewHolder;
                 if(convertView == null) {
                     convertView = inflater.inflate(R.layout.listview_messages, parent, false);
 
                     messageViewHolder = new MessageViewHolder();
-                    messageViewHolder.usernameText = (TextView) convertView.findViewById(R.id.username_display);
+                    messageViewHolder.detailsText = (TextView) convertView.findViewById(R.id.details_display);
                     messageViewHolder.messageText = (TextView) convertView.findViewById(R.id.message_display);
                     messageViewHolder.message = (LinearLayout) convertView.findViewById(R.id.message);
                     messageViewHolder.bg = messageViewHolder.messageText.getBackground();
-
-                    messageViewHolder.messageText.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            AlertDialog.Builder messageChoice = new AlertDialog.Builder(context);
-
-                            messageChoice
-                                    .setTitle("Message options")
-                                    .setItems(R.array.message_dialog_choice_list, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            switch(which) {
-                                                case MSG_MENU_COPY_TEXT:
-                                                    ClipboardManager clipMan = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                                                    ClipData clip = ClipData.newPlainText("chat message", messageViewHolder.messageText.getText().toString());
-                                                    clipMan.setPrimaryClip(clip);
-
-                                                    Toast.makeText(context, "Message copied to clipboard.", Toast.LENGTH_LONG).show();
-                                                    break;
-                                                case MSG_MENU_VIEW_DETAILS:
-                                                    break;
-                                                case MSG_MENU_VIEW_PROFILE:
-                                                    Intent intent = new Intent(context, UserProfileActivity.class);
-                                                    intent.putExtra("user_id", ((MessageItem) getItem(position)).user_id);
-                                                    context.startActivity(intent);
-                                                    break;
-                                                default:
-                                                    break;
-                                            }
-                                        }
-                                    });
-
-                            messageChoice.show();
-                            return true;
-                        }
-                    });
 
                     convertView.setTag(messageViewHolder);
                 } else {
                     messageViewHolder = (MessageViewHolder) convertView.getTag();
                 }
 
-                MessageItem msg_item = (MessageItem) getItem(position);
-                messageViewHolder.usernameText.setText(msg_item.getUsername());
+                // need to reset listener (expensive but necessary to fetch correct user ID for user profile)
+                messageViewHolder.message.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        AlertDialog.Builder messageChoice = new AlertDialog.Builder(context);
+
+                        messageChoice
+                                .setTitle("Message options")
+                                .setItems(R.array.message_dialog_choice_list, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        switch(which) {
+                                            case MSG_MENU_COPY_TEXT:
+                                                ClipboardManager clipMan = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                                                ClipData clip = ClipData.newPlainText("chat message", messageViewHolder.messageText.getText().toString());
+                                                clipMan.setPrimaryClip(clip);
+
+                                                Toast.makeText(context, "Message copied to clipboard.", Toast.LENGTH_LONG).show();
+                                                break;
+                                            case MSG_MENU_VIEW_DETAILS:
+                                                AlertDialog.Builder detailsDialog = new AlertDialog.Builder(context);
+                                                StringBuilder messageStr = new StringBuilder();
+
+                                                messageStr.append("Type: Message");
+                                                messageStr.append("\n");
+                                                messageStr.append("From: ");
+                                                messageStr.append(msg_item.getUsername());
+                                                messageStr.append("\n");
+                                                messageStr.append("Sent: ");
+                                                messageStr.append(
+                                                        new SimpleDateFormat("d MMMM yyyy h:mm a")
+                                                                .format(Utility.parseDateAsUTC(msg_item.getDateTimeUTC()))
+                                                                .replace("AM", "am")
+                                                                .replace("PM", "pm")
+                                                );
+
+                                                detailsDialog
+                                                        .setTitle("Message details")
+                                                        .setMessage(messageStr.toString())
+                                                        .show();
+                                                break;
+                                            case MSG_MENU_VIEW_PROFILE:
+                                                Intent intent = new Intent(context, UserProfileActivity.class);
+                                                intent.putExtra("user_id", msg_item.user_id);
+                                                context.startActivity(intent);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                });
+
+                        messageChoice.show();
+                        return true;
+                    }
+                });
+
+                StringBuilder details = new StringBuilder();
+
+                if(!username.equals(msg_item.getUsername())) {
+                    details.append(msg_item.getUsername());
+                    details.append(" - ");
+                }
+
+                details.append(Utility.getAbbreviatedDateTime(Utility.parseDateAsUTC(msg_item.getDateTimeUTC())));
+
+                messageViewHolder.detailsText.setText(details.toString());
                 messageViewHolder.messageText.setText(msg_item.getMessage());
                 // add all links if message contains them
                 Linkify.addLinks(messageViewHolder.messageText, Linkify.ALL);
 
                 if(username.equals(msg_item.getUsername())) {
                     messageViewHolder.message.setGravity(Gravity.END);
+                    detailsLinearLayoutParams.setMargins(0, 0, 32, 32);
+                    messageViewHolder.detailsText.setLayoutParams(detailsLinearLayoutParams);
                     if (messageViewHolder.bg instanceof ShapeDrawable) {
                         ((ShapeDrawable) messageViewHolder.bg).getPaint().setColor(Color.parseColor("#FFDDDDDD"));
                     } else if (messageViewHolder.bg instanceof GradientDrawable) {
@@ -183,6 +222,8 @@ public class MessageAdapter extends BaseAdapter {
                     }
                 } else {
                     messageViewHolder.message.setGravity(Gravity.START);
+                    detailsLinearLayoutParams.setMargins(32, 0, 0, 32);
+                    messageViewHolder.detailsText.setLayoutParams(detailsLinearLayoutParams);
                     if (messageViewHolder.bg instanceof ShapeDrawable) {
                         ((ShapeDrawable) messageViewHolder.bg).getPaint().setColor(Color.parseColor("#FFFFFFFF"));
                     } else if (messageViewHolder.bg instanceof GradientDrawable) {
@@ -190,13 +231,13 @@ public class MessageAdapter extends BaseAdapter {
                     }
                 }
 
-                messageViewHolder.usernameText.setVisibility(View.VISIBLE);
+                messageViewHolder.detailsText.setVisibility(View.VISIBLE);
 
-                if(position > 0) {
-                    Object prev_msg_item = getItem(position - 1);
-                    if (prev_msg_item instanceof MessageItem) {
-                        if (msg_item.getUsername().equals(((MessageItem) prev_msg_item).getUsername())) {
-                            messageViewHolder.usernameText.setVisibility(View.GONE);
+                if(position + 1 < mArrayList.size()) {
+                    Object next_msg_item = getItem(position + 1);
+                    if (next_msg_item instanceof MessageItem) {
+                        if (msg_item.getUsername().equals(((MessageItem) next_msg_item).getUsername())) {
+                            messageViewHolder.detailsText.setVisibility(View.GONE);
                         }
                     }
                 }
@@ -254,7 +295,7 @@ public class MessageAdapter extends BaseAdapter {
 
     public static class MessageViewHolder {
         public LinearLayout message;
-        public TextView usernameText;
+        public TextView detailsText;
         public TextView messageText;
         public Drawable bg;
     }

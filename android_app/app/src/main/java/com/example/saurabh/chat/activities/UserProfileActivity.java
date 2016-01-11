@@ -201,10 +201,10 @@ public class UserProfileActivity extends AppCompatActivity {
                 statusText.setText(jsonObject.getBoolean("online") ? res.getString(R.string.status_online) : res.getString(R.string.status_offline));
 
                 createdDate = Utility.parseDateAsUTC(jsonObject.getString("created_date"));
-                displayJoinedDateText.setText(res.getString(R.string.joined_date, Utility.getTimeAgo(createdDate.getTime())));
+                displayJoinedDateText.setText(res.getString(R.string.joined_date, Utility.getTimeAgo(createdDate)));
 
                 lastActiveDate = Utility.parseDateAsUTC(jsonObject.getString("last_active_date"));
-                displayLastActiveDateText.setText(res.getString(R.string.last_active_date, Utility.getTimeAgo(lastActiveDate.getTime())));
+                displayLastActiveDateText.setText(res.getString(R.string.last_active_date, Utility.getTimeAgo(lastActiveDate)));
 
                 is_friend = jsonObject.getBoolean("is_friend");
                 has_requested_to_be_friends = jsonObject.getBoolean("has_requested_to_be_friends");
@@ -280,8 +280,8 @@ public class UserProfileActivity extends AppCompatActivity {
             UserProfileActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    displayJoinedDateText.setText(res.getString(R.string.joined_date, Utility.getTimeAgo(createdDate.getTime())));
-                    displayLastActiveDateText.setText(res.getString(R.string.last_active_date, Utility.getTimeAgo(lastActiveDate.getTime())));
+                    displayJoinedDateText.setText(res.getString(R.string.joined_date, Utility.getTimeAgo(createdDate)));
+                    displayLastActiveDateText.setText(res.getString(R.string.last_active_date, Utility.getTimeAgo(lastActiveDate)));
                 }
             });
         }

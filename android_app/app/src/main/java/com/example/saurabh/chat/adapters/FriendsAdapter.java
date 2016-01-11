@@ -106,7 +106,7 @@ public class FriendsAdapter extends BaseAdapter implements AdapterView.OnItemCli
                 friendViewHolder.usernameText.setText(friendItem.getUsername());
                 final Date createdDate = Utility.parseDateAsUTC(friendItem.getDate());
                 if (createdDate != null) {
-                    friendViewHolder.becameFriendsText.setText(activity.getResources().getString(R.string.became_friends, Utility.getTimeAgo(createdDate.getTime())));
+                    friendViewHolder.becameFriendsText.setText(activity.getResources().getString(R.string.became_friends, Utility.getTimeAgo(createdDate)));
                 }
                 break;
             case TYPE_FRIEND_REQUEST:

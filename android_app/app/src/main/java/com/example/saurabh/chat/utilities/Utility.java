@@ -2,12 +2,11 @@ package com.example.saurabh.chat.utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class Utility {
-    // Start of Google Licensed Software
-
     /*
      * Modified by Saurabh Joshi
      * Copyright 2012 Google Inc.
@@ -30,8 +29,9 @@ public class Utility {
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
+    public static String getTimeAgo(Date date) {
+        long time = date.getTime();
 
-    public static String getTimeAgo(long time) {
         if (time < 1000000000000L) {
             // if timestamp given in seconds, convert to millis
             time *= 1000;
@@ -60,8 +60,6 @@ public class Utility {
         }
     }
 
-    // End of Google Licensed Software
-
     public static Date parseDateAsUTC(String date_str) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date d = null;
@@ -74,5 +72,41 @@ public class Utility {
         }
 
         return d;
+    }
+
+    public static String getAbbreviatedDateTime(Date date) {
+        long time = date.getTime();
+
+        if (time < 1000000000000L) {
+            // if timestamp given in seconds, convert to millis
+            time *= 1000;
+        }
+
+        long now = System.currentTimeMillis();
+        if (time > now + MINUTE_MILLIS || time <= 0) {
+            return null;
+        }
+
+        // https://stackoverflow.com/questions/2517709/comparing-two-dates-to-see-if-they-are-in-the-same-day
+        Calendar dateCalendar = Calendar.getInstance();
+        Calendar nowCalender = Calendar.getInstance();
+
+        dateCalendar.setTime(date);
+        nowCalender.setTimeInMillis(now);
+
+        final long diff = now - time;
+        if (diff < MINUTE_MILLIS) {
+            return "Now";
+        } else if (diff < 50 * MINUTE_MILLIS) {
+            return diff / MINUTE_MILLIS + " mins";
+        } else if (diff < DAY_MILLIS) {
+            return new SimpleDateFormat("h:mm a").format(date).replace("AM", "am").replace("PM", "pm");
+        } else if (diff < 4 * DAY_MILLIS) {
+            return new SimpleDateFormat("EEE h:mm a").format(date).replace("AM", "am").replace("PM", "pm");
+        } else if(dateCalendar.get(Calendar.YEAR) == nowCalender.get(Calendar.YEAR)) {
+            return new SimpleDateFormat("EEE d MMM h:mm a").format(date).replace("AM", "am").replace("PM", "pm");
+        }
+
+        return new SimpleDateFormat("EEE d MMM yyyy h:mm a").format(date).replace("AM", "am").replace("PM", "pm");
     }
 }

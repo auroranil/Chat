@@ -89,7 +89,7 @@ public class RoomAdapter extends BaseAdapter implements AdapterView.OnItemClickL
 
         final Date createdDate = Utility.parseDateAsUTC(roomItem.getDate());
         if(createdDate != null) {
-            roomViewHolder.createdByUserText.setText(res.getString(R.string.created_by_user, roomItem.getUsername() + " " + Utility.getTimeAgo(createdDate.getTime())));
+            roomViewHolder.createdByUserText.setText(res.getString(R.string.created_by_user, roomItem.getUsername() + " " + Utility.getTimeAgo(createdDate)));
         }
 
         return convertView;

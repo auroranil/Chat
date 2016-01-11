@@ -7,6 +7,12 @@
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:scrollbarStyle="outsideInset"
+        android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="32dp"
         android:layout_alignParentTop="true"
         android:transcriptMode="normal"
         android:focusable="true"
@@ -45,28 +51,27 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:descendantFocusability="beforeDescendants"
-        android:focusableInTouchMode="true"
         android:background="@drawable/bordertop"
         android:orientation="vertical">
 
         <EditText
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingStart="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingEnd="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_horizontal_margin"
-            android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:hint="@string/write_a_message"
+            android:textSize="16sp"
             android:background="@null"
             android:ems="10"
             android:id="@+id/txt_message" />
 
         <Button
-            android:minWidth="0dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:layout_gravity="end"
             android:background="@drawable/round_button"
             android:enabled="false"

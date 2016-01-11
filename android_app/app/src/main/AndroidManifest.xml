@@ -38,6 +38,7 @@
 
         <activity
             android:name=".activities.ChatActivity"
+            android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation|screenSize"
             android:parentActivityName=".activities.MenuActivity"
             android:label="@string/title_activity_chat" >

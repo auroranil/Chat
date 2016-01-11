@@ -23,6 +23,7 @@
 
     <string name="template_broadcast">Broadcast message</string>
     <string name="template_username">Username</string>
+    <string name="template_details">Username - 1/1/1970 0:00 am</string>
     <string name="template_message">Message</string>
 
     <string name="last_active_date">Last active %s</string>
