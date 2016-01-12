@@ -40,3 +40,4 @@ bcrypt = Bcrypt(app)
 socketio = SocketIO(app)
 
 from controller import *
+app.register_blueprint(main)
