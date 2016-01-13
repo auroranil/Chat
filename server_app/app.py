@@ -37,7 +37,7 @@ except ImportError as e:
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
-socketio = SocketIO(app)
+socketio = SocketIO(app, logger=True, engineio_logger=True)
 
 from controller import *
 app.register_blueprint(main)

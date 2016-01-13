@@ -2,28 +2,29 @@
 A simple chat application for android with a python flask server as the backend.
 
 ## Setup
-### Chat server: Ubuntu
-Run this command to clone the repository, install dependencies, and get the Chat server up and running.
+### Chat server: Ubuntu (quick and easy)
+Run this command to clone the repository, install dependencies, and get the Chat server up and running in daemon mode.
 ```
 curl https://raw.githubusercontent.com/jos0003/Chat/master/setup_server.sh | sh
 ```
 
-### Chat server: Other operating systems
+### Chat server: All operating systems (more challenging)
 * Clone the repository
 ```
 git clone https://github.com/jos0003/Chat
 ```
-* Install these dependencies:
+* Install these following dependencies:
   * python
+  * bcrypt (flask-bcrypt needs this)
+  * eventlet (flask-socketio prefers this the most; "gevent" is an alternative)
+  * sqlite (for portable database; easier to setup than mysql)
   * pip packages
     * flask
     * flask-bcrypt
     * flask-socketio
     * sqlalchemy
     * flask-sqlalchemy
-  * bcrypt (flask-bcrypt needs this)
-  * sqlite for portable database (easier to setup than mysql)
-* Run `python /path/to/Chat/server_app` to start the server.
+* Run `python /path/to/Chat/server_app -d` to start the server in daemon mode.
 
 ### Chat client: Web
 (Currently work in progress)
@@ -34,9 +35,17 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 * Open `android_app` gradle project in either Android Studio or Eclipse with the gradle plugin.
 * Install android application on your phone and run the app.
 
-## Run Chat server
-* Run `python /path/to/Chat/server_app` to start the server.
- * Use `screen` or `tmux` if you want to run the server without staying logged in to a terminal.
+## Chat server
+
+### Run
+* Run `python /path/to/Chat/server_app -d` to start the server in daemon mode, or
+* Run `python /path/to/Chat/server_app -t` to start the server within a terminal.
+
+### Help
+* Run `python /path/to/Chat/server_app -h` to view help details.
+
+### Stop daemon
+* Run `sh /path/to/Chat/server_app/stop_daemon_server.sh` to stop the daemon for Chat server.
 
 ## Features
 * Able to remember user when logging in/signing up
@@ -48,7 +57,7 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 * Friends
   * Ability to add (via requests) and remove friends
   * Display friends in a list
-
+* Server can run in daemon mode.
 ## TODO:
 
 ### At all stages of development
@@ -99,9 +108,6 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 
 ### Welcome screen
 * Dynamically form-validate welcomeActivity as credentials are being entered.
-
-### Server
-* Use daemon instead of using `screen` or `tmux` to run the server.
 
 ### Testing
 * Write test cases

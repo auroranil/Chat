@@ -13,7 +13,7 @@ def check_directory():
 
 def daemonize():
     if os.path.exists(os.path.expanduser("~/.chatserver/pid")):
-        sys.stderr.write("[FATAL] The daemon seems to be already running. To override this behaviour, delete ~/.chatserver/pid\n")
+        sys.stderr.write("[FATAL] The daemon seems to be already running.\nTo kill the server, run 'sh server_app/stop_daemon_server.sh'.\nTo override this behaviour, delete ~/.chatserver/pid\n")
         sys.exit(1)
 
     try:
@@ -30,7 +30,7 @@ def daemonize():
     try:
         os.chdir("/")
     except:
-        sys.stderr.write("Failed to chnage cwd to root. This application may prevent some partitions from unmounting.\n")
+        sys.stderr.write("Failed to change cwd to root. This application may prevent some partitions from unmounting.\n")
     try:
         os.setsid()
     except:
@@ -59,6 +59,10 @@ def daemonize():
         pidfile.close()
     except:
         sys.stderr.write("[FATAL] pid file writing failed. Try running with the --no-daemon option.\n")
+        
+    sys.stdout.write("[INFO] Now running server on daemon mode.\n")
+    sys.stdout.write("[INFO] Kill server by running 'sh server_app/stop_daemon_server.sh'\n")
+    sys.stdout.write("[INFO] To view logs for this server, navigate to ~/.chatserver directory and open the latest log. This is the last message that will not be logged to the file.\n")
 
 def setup_logging(args):
     logFormatter = logging.Formatter('%(asctime)s - [%(levelname)s] %(name)s: %(message)s')
@@ -66,37 +70,38 @@ def setup_logging(args):
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
 
-    if args.daemon:
-        fileHandler = logging.FileHandler(os.path.expanduser("~/.chatserver/chat-"+time.strftime("%d-%m-%Y.log")))
-        fileHandler.setFormatter(logFormatter)
-        root.addHandler(fileHandler)
-        
-        """
-        Workaround to get socket.io logging the main logs
-        Based on http://www.electricmonk.nl/log/2011/08/14/redirect-stdout-and-stderr-to-a-logger-in-python/
-        """
-        class StreamToLogger(object):
-            def __init__(self, logger, log_level=logging.INFO):
-                self.logger = logger
-                self.log_level = log_level
-                self.linebuf = ''
- 
-            def write(self, buf):
-                for line in buf.rstrip().splitlines():
-                    self.logger.log(self.log_level, line.rstrip())
-
-        sys.stdin.close()
-        sys.stdout.close()
-        sys.stderr.close()
-
-        stdout_logger = logging.getLogger('STDOUT')
-        sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
-        stderr_logger = logging.getLogger('STDERR')
-        sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
-    else:
+    fileHandler = logging.FileHandler(os.path.expanduser("~/.chatserver/chat-" + time.strftime("%d-%m-%Y.log")))
+    fileHandler.setFormatter(logFormatter)
+    root.addHandler(fileHandler)
+    
+    if not args.daemon:
         consoleHandler = logging.StreamHandler(sys.stdout)
         consoleHandler.setFormatter(logFormatter)
         root.addHandler(consoleHandler)
+
+def redirect_std_to_logging():
+    """
+    Redirects stdout and stderr to log file.
+    Based on http://www.electricmonk.nl/log/2011/08/14/redirect-stdout-and-stderr-to-a-logger-in-python/
+    """
+    class StreamToLogger(object):
+        def __init__(self, logger, log_level=logging.INFO):
+            self.logger = logger
+            self.log_level = log_level
+            self.linebuf = ''
+
+        def write(self, buf):
+            for line in buf.rstrip().splitlines():
+                self.logger.log(self.log_level, line.rstrip())
+
+    sys.stdin.close()
+    sys.stdout.close()
+    sys.stderr.close()
+
+    stdout_logger = logging.getLogger('STDOUT')
+    sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
+    stderr_logger = logging.getLogger('STDERR')
+    sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
 
 def setup_db():
     try:
@@ -119,17 +124,21 @@ def run_server():
     except:
         sys.stderr.write("[FATAL] port must be an integer\n")
         sys.exit(1)
+    
+    setup_logging(results)
+    
     if results.daemon:
         daemonize()
-    setup_logging(results)
-    logging.info("Daemon spawned successfully, pid is %d" %os.getpid())
+        redirect_std_to_logging()
+        logging.info("Daemon spawned successfully, pid is %d" % os.getpid())
+    
     setup_db()
 
     logging.info("Chat server is now starting on 0.0.0.0:%r" % results.port)
     try:
         socketio.run(app, host="0.0.0.0", port=results.port, use_reloader=False)
     except Exception, e:
-        logging.critical("SocketIO failed: %s" %str(e))
+        logging.critical("SocketIO failed: %s" % str(e))
         sys.exit(1)
     
 check_directory()
