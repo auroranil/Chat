@@ -1,5 +1,5 @@
 import logging
-import json
+import json 
 
 from app import socketio
 from model import *
@@ -85,7 +85,10 @@ def handle_sent_message(data):
     logging.debug('received message: ' + str(data))
     
     global User, Message, Room
-    message = Message(data.get('user_id'), data.get('message'), data.get('type'), data.get('room_id'))
+    if not data.get('message'):
+        return
+    
+    message = Message(data.get('user_id'), data.get('message').strip(), data.get('type'), data.get('room_id'))
     message.commit()
     
     emit("received message", message.serialize(User), room="room" + str(data.get('room_id')))

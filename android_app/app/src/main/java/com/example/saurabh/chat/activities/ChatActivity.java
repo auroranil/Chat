@@ -85,7 +85,7 @@ public class ChatActivity extends AppCompatActivity {
         if (actionBar != null) {
             // Remove "Chat" placeholder
             actionBar.setTitle("");
-            
+
             actionBar.setDisplayShowCustomEnabled(true);
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View v = inflater.inflate(R.layout.actionbar_chat, null);
@@ -207,7 +207,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 // Don't send message if string is empty
                 if (!msg.isEmpty()) {
-                    new SendMessageTask(msg).execute();
+                    new SendMessageTask(msg.trim()).execute();
                 }
             }
         });
