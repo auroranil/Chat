@@ -80,10 +80,10 @@ public class WelcomeActivity extends AppCompatActivity implements Validator.Vali
 
     @Override
     public void onValidationSucceeded() {
-        String username_str = username.getText().toString();
+        String username_str = username.getText().toString().trim();
         String password_str = password.getText().toString();
 
-        String url_str = url.getText().toString();
+        String url_str = url.getText().toString().trim();
         if (!url_str.startsWith("https://") && !url_str.startsWith("http://")) {
             url_str = "http://" + url_str;
         }

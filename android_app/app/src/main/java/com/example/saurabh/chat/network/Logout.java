@@ -65,16 +65,16 @@ public class Logout {
 
         @Override
         protected void onPostExecute(JSONObject json) {
-            boolean logged_out = false;
+            boolean success = false;
             if(json != null) {
                 try {
-                    logged_out = json.getBoolean("logged out");
+                    success = json.getBoolean("success");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
-            if(logged_out) {
+            if(success) {
                 Log.i("User", "User has successfully logged out.");
             } else {
                 Log.i("User", "Failed to logout user from server. Removing shared preferences and restarting application anyway.");

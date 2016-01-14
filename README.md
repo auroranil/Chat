@@ -58,6 +58,7 @@ Once Chat server is running, Chat client is accessible via a web browser by head
   * Ability to add (via requests) and remove friends
   * Display friends in a list
 * Server can run in daemon mode.
+
 ## TODO:
 
 ### At all stages of development

@@ -157,7 +157,7 @@ public class MenuActivity extends AppCompatActivity {
         createRoomDialog.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String room = input.getText().toString();
+                String room = input.getText().toString().trim();
                 if(!room.isEmpty() && room.length() <= 20) {
                     (new CreateRoomAsyncTask(MenuActivity.this, user_id, username, session, room)).execute();
                 } else {
