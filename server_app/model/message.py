@@ -37,6 +37,18 @@ class Message(db.Model):
         
         return result
         
+    def serialize(self, User):
+        output_dict = {
+            "username": User.query.get(self.user_id).username,
+            "user_id": self.user_id,
+            "message_id": self.id,
+            "message": self.message,
+            "datetimeutc": str(self.date)
+        }
+        
+        return output_dict
+        
     def commit(self):
         db.session.add(self)
         db.session.commit()
+

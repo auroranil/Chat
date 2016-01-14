@@ -24,7 +24,6 @@ import com.example.saurabh.chat.R;
 import com.example.saurabh.chat.adapters.MessageAdapter;
 import com.example.saurabh.chat.model.User;
 import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
@@ -37,6 +36,8 @@ import java.util.ArrayList;
 
 
 public class ChatActivity extends AppCompatActivity {
+    private static final String TAG = "activities/ChatActivity";
+
     private static final int ROOM = 0, FRIEND = 1;
     private ListView listViewMessages;
     private MessageAdapter adapter;
@@ -54,6 +55,13 @@ public class ChatActivity extends AppCompatActivity {
     private JSONObject info;
     private Socket mSocket;
 
+    // This array keeps track of which list items have not been
+    // sent to the server.
+    private ArrayList<Integer> not_on_server_indices = new ArrayList<>();
+
+    int user_id;
+    String username;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,8 +71,8 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ChatApplication chatApplication = (ChatApplication) this.getApplication();
         User user = chatApplication.getUser();
-        int user_id = user.getUserID();
-        String username = user.getUsername();
+        user_id = user.getUserID();
+        username = user.getUsername();
         String session = user.getSession();
         String room_name = intent.getStringExtra("room_name");
         // TODO: deal with default value
@@ -190,7 +198,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 // Don't send message if string is empty
                 if (!msg.isEmpty()) {
-                    new SendMessageTask().execute(msg);
+                    new SendMessageTask(msg).execute();
                 }
             }
         });
@@ -236,28 +244,49 @@ public class ChatActivity extends AppCompatActivity {
         public void call(Object... args) {
             Log.i("message received", "a");
             JSONObject json;
-            int user_id = -1, message_id = -1;
-            String username = "", message_contents = "", datetimeutc = "";
+            final int msg_user_id, message_id;
+            final String msg_username, message_contents, datetimeutc;
             try {
                 json = (JSONObject) args[0];
 
-                user_id = json.getInt("user_id");
+                msg_user_id = json.getInt("user_id");
                 message_id = json.getInt("message_id");
-                username = json.getString("username");
+                msg_username = json.getString("username");
                 message_contents = json.getString("message");
                 datetimeutc = json.getString("datetimeutc");
+
+                if(user_id == msg_user_id && not_on_server_indices.size() > 0) {
+                    /** TODO: remove assumption that messages are received in order
+                      * Proper way is to sort messages by their IDs in ascending order
+                      **/
+
+                    ChatActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessageAdapter.MessageItem msg_item = (MessageAdapter.MessageItem) adapter.getItem(not_on_server_indices.get(0));
+                            msg_item.savedToServer(message_id, datetimeutc);
+
+                            // In case there are messages that were sent to server before this one,
+                            // move it to the end of the list.
+                            // adapter.moveItemToEndOfList(not_on_server_indices.get(0));
+
+                            listViewMessages.setAdapter(listViewMessages.getAdapter());
+                            not_on_server_indices.remove(0);
+                        }
+                    });
+                } else {
+                    final MessageAdapter.MessageItem msgItem = new MessageAdapter.MessageItem(message_id, user_id, msg_username, message_contents, datetimeutc);
+
+                    ChatActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.addItem(msgItem);
+                        }
+                    });
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            final MessageAdapter.MessageItem msgItem = new MessageAdapter.MessageItem(message_id, user_id, username, message_contents, datetimeutc);
-
-            ChatActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.addItem(msgItem);
-                }
-            });
         }
     };
 
@@ -394,37 +423,33 @@ public class ChatActivity extends AppCompatActivity {
     };
 
     private class SendMessageTask extends AsyncTask<String, String, Void> {
+        private final String message_contents;
+
+        public SendMessageTask(String message_contents) {
+            this.message_contents = message_contents;
+        }
+
         @Override
         protected Void doInBackground(String... args) {
             JSONObject inputJson;
 
             try {
                 inputJson = new JSONObject(info.toString());
-                inputJson.put("message", args[0]);
+                inputJson.put("message", message_contents);
             } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
             }
 
-            mSocket.emit("send message", inputJson, new Ack() {
-                @Override
-                public void call(Object... args) {
-                    final String ack_message = (String) args[0];
-                    ChatActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (ack_message != null)
-                                Log.i("socket", ack_message);
-                        }
-                    });
-                }
-            });
+            mSocket.emit("send message", inputJson);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void a) {
             Log.i("socket", "sent message to server");
+            final MessageAdapter.MessageItem msgItem = new MessageAdapter.MessageItem(user_id, username, message_contents);
+            not_on_server_indices.add(adapter.addItem(msgItem));
         }
     }
 }

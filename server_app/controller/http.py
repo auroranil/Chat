@@ -20,11 +20,12 @@ def authenticated_only_http(f):
         if user_id is None or session is None:
             logging.info("Failed auth: Did not supply credentials")
             return
-        elif not User.session_in_user(user_id, session, UserSession):
+        
+        if not User.session_in_user(user_id, session, UserSession):
             logging.info("Failed auth: Not in session")
             return
+        
         return f(*args, **kwargs)
-    
     return wrapped
 
 def render_template_custom(path,**kwargs):
@@ -43,18 +44,28 @@ def login():
     elif request.method == 'POST':
         auth = json.loads(request.data)
 
-        if auth is not None:
-            username, password = auth['username'], auth['password']
-            user = User.query.filter_by(username=username).first()
+        if auth is None:
+            return jsonify({"authenticated": False, "error": "Failed to collect credentials."})
+        
+        username, password = auth.get('username'), auth.get('password')
+        
+        # Must be non-empty strings.
+        if not username or not password:
+            return jsonify({"authenticated": False, "error": "Failed to collect credentials."})
+        
+        username = username.strip() # Never trim passwords
+        
+        user = User.query.filter_by(username=username).first()
+        
+        if user is None:
+            return jsonify({"authenticated": False, "error": "Username does not exist."})
             
-            if user is not None:
-                session = user.authenticate(password, UserSession)
-                if session != None:
-                    logging.info("%r has logged in." % user)
-                    return jsonify({"authenticated": True, "user_id": user.id, "session": session})
-                return jsonify({"authenticated": False, "reason": "Either session is invalid or session has expired."})
-            return jsonify({"authenticated": False, "reason": "Username does not exist."})
-        return jsonify({"authenticated": False, "reason": "Failed to collect credentials."})
+        session = user.authenticate(password, UserSession)
+        if session == None:
+            return jsonify({"authenticated": False, "error": "Either session is invalid or session has expired."})
+
+        logging.info("%r has logged in." % user)
+        return jsonify({"authenticated": True, "user_id": user.id, "session": session})
     
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -63,15 +74,24 @@ def signup():
     elif request.method == 'POST':
         cred = json.loads(request.data)
         
-        if cred is not None:
-            username, password = cred['username'], cred['password']
-            user = User(username)
-            session = user.register(password, UserSession)
-            if session != None:
-                logging.info("%r has signed up." % user)
-                return jsonify({"registered": True, "user_id": user.id, "session": session})
-        return jsonify({"registered": False})
-
+        if cred is None:
+            return jsonify({"registered": False, "error": "Unable to fetch JSON input."})
+            
+        username, password = cred.get('username'), cred.get('password')
+        
+        # Must be non-empty strings.
+        if not username or not password:
+            return jsonify({"registered": False, "error": "Username and password fields not set."})
+            
+        username = username.strip() # Never trim passwords
+        user = User(username)
+        session = user.register(password, UserSession)
+        if session is None:
+            return jsonify({"registered": False, "error": "Database error when trying to register."})
+            
+        logging.info("%r has signed up." % user)
+        return jsonify({"registered": True, "user_id": user.id, "session": session})
+        
 @main.route('/fetchrooms', methods=['POST'])
 @authenticated_only_http
 def fetch_rooms():
@@ -97,18 +117,28 @@ def fetch_rooms():
 def create_room():
     data = json.loads(request.data)
     
-    if data is not None:
-        global Room, User
-        logging.info("%r is creating room '%r'" % (data.get("username"), data.get("room_name")))
-        try:
-            room = Room(data.get('room_name'), data.get("user_id"))
-            room.commit()
-        except sqlalchemy.exc.IntegrityError as e:
-            # code, msg = e.orig
-            c = {"created": False}
-            return c
-        return jsonify({"created": True, "room_id": room.id})
-    return jsonify({"created": False})
+    if data is None:
+        return jsonify({"created": False, "error": "Unable to fetch JSON input."})
+    
+    global Room, User
+    user_id, username, room_name = data.get("user_id"), data.get("username"), data.get("room_name")
+    if not username or not room_name:
+        return jsonify({"created": False, "error": "Username and room name must not be empty strings."})
+    
+    username, room_name = username.strip(), room_name.strip()
+    
+    if(room_name > 20):
+        return jsonify({"created": False, "error": "Room name cannot be longer than 20 characters."})
+    
+    logging.info("%r is creating room '%r'" % (username, room_name))
+    
+    try:
+        room = Room(room_name, user_id)
+        room.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        return {"created": False, "error": "Database error when trying to create room."}
+    
+    return jsonify({"created": True, "room_id": room.id})
 
 @main.route('/fetchfriends', methods=['POST'])
 @authenticated_only_http
@@ -117,6 +147,9 @@ def fetch_friends():
     
     data = json.loads(request.data)
     
+    # If this function has been reached,
+    # then it is known that user_id is not None
+    # as it has passed the authentication stage.
     user_id = data.get("user_id")
     
     friends = []
@@ -143,97 +176,118 @@ def fetch_friends():
 @authenticated_only_http
 def query_user(other_user_id):
     global User, Friend
-    user = User.query.get(other_user_id)
     data = json.loads(request.data)
+    # If this function has been reached,
+    # then it is known that user_id is not None
+    # as it has passed the authentication stage.
     user_id = data.get("user_id")
     
-    friend = Friend.query.filter(
-        sqlalchemy.or_(
-            sqlalchemy.and_(
-                Friend.req_user_id == user_id, 
-                Friend.res_user_id == int(other_user_id)
-            ), 
-            sqlalchemy.and_(
-                Friend.req_user_id == int(other_user_id),
-                Friend.res_user_id == user_id
+    user = User.query.get(other_user_id)
+    if user is None:
+        return jsonify({"success": False, "error": "User ID %r does not exist." % other_user_id})
+    
+    try:
+        friend = Friend.query.filter(
+            sqlalchemy.or_(
+                sqlalchemy.and_(
+                    Friend.req_user_id == user_id, 
+                    Friend.res_user_id == int(other_user_id)
+                ), 
+                sqlalchemy.and_(
+                    Friend.req_user_id == int(other_user_id),
+                    Friend.res_user_id == user_id
+                )
             )
-        )
-    ).first()
-    
-    if user is not None:
-        outputDict = {
-                "username": user.username, 
-                "created_date": str(user.created_date), 
-                "last_active_date": str(user.last_active_date), 
-                "online": datetime.utcnow() - user.last_active_date < timedelta(minutes=15)
-        }
+        ).first()
+    except sqlalchemy.exc.IntegrityError as e:
+        return jsonify({"success": False, "error": "Database error."})       
         
-        outputDict["is_friend"] = friend is not None and not friend.request
-        outputDict["has_requested_to_be_friends"] = friend is not None and friend.request and friend.req_user_id == int(other_user_id)
-        outputDict["has_sent_friend_request"] = friend is not None and friend.request and friend.res_user_id == int(other_user_id)
-    
-        return jsonify(outputDict)
-    return jsonify({"error": "User ID %r does not exist." % other_user_id})
+    output_dict = {
+            "success": True,
+            "username": user.username, 
+            "created_date": str(user.created_date), 
+            "last_active_date": str(user.last_active_date), 
+            "online": datetime.utcnow() - user.last_active_date < timedelta(minutes=15),
+            "is_friend": friend is not None and not friend.request,
+            "has_requested_to_be_friends": friend is not None and friend.request and friend.req_user_id == int(other_user_id),
+            "has_sent_friend_request": friend is not None and friend.request and friend.res_user_id == int(other_user_id)
+    }
+
+    return jsonify(output_dict)
 
 @main.route('/friend', methods=['POST'])
 @authenticated_only_http
 def friend():
     global User, Friend
     data = json.loads(request.data)
-    # If they are not the same user
-    user_id = data.get("user_id")
-    friend_user_id = data.get("friend_user_id")
-    if user_id != friend_user_id:
-        friend = Friend.query.filter(
-            sqlalchemy.or_(
-                sqlalchemy.and_(
-                    Friend.req_user_id == friend_user_id, 
-                    Friend.res_user_id == user_id
-                ), 
-                sqlalchemy.and_(
-                    Friend.req_user_id == user_id,
-                    Friend.res_user_id == friend_user_id
-                )
+    user_id, friend_user_id = data.get("user_id"), data.get("friend_user_id")
+    
+    if friend_user_id is None:
+        return jsonify({"success": False, "error": "Field 'friend_user_id' not set. It must be set to user ID other than the user trying to change status of being friends."})
+        
+    if friend_user_id < 0:
+        return jsonify({"success": False, "error": "Field 'friend_user_id' has to be >= 0. It must be set to user ID other than the user trying to change status of being friends."})
+    
+    # A user cannot be friends with themselves
+    if user_id is friend_user_id:
+        return jsonify({"success": False, "error": "Same User ID %r when trying to send friend request, accept friend request, or remove friends." % user_id})
+    
+    friend = Friend.query.filter(
+        sqlalchemy.or_(
+            sqlalchemy.and_(
+                Friend.req_user_id == friend_user_id, 
+                Friend.res_user_id == user_id
+            ), 
+            sqlalchemy.and_(
+                Friend.req_user_id == user_id,
+                Friend.res_user_id == friend_user_id
             )
-        ).first()
-        if friend is not None:
-            if friend.request:
-                if friend.req_user_id == user_id:
-                    # Remove friend request
-                    logging.debug("Removing friend request...")
-                    friend.remove()
-                    return jsonify({"success": True})
-                elif friend.res_user_id == user_id:
-                    # Accept friend request
-                    logging.debug("Accepting friend request...")
-                    friend.request = False
-                    friend.update()
-                    return jsonify({"success": True})
-            else:
-                # Remove friend
-                logging.debug("Removing friend...")
+        )
+    ).first()
+    
+    # Friend logic
+    if friend is not None:
+        if friend.request:
+            if friend.req_user_id == user_id:
+                # Remove friend request
+                logging.debug("Removing friend request...")
                 friend.remove()
                 return jsonify({"success": True})
+            elif friend.res_user_id == user_id:
+                # Accept friend request
+                logging.debug("Accepting friend request...")
+                friend.request = False
+                friend.update()
+                return jsonify({"success": True})
         else:
-            logging.debug("Adding friend request...")
-            friend = Friend(user_id, friend_user_id)
-            friend.addAndCommit()
+            # Remove friend
+            logging.debug("Removing friend...")
+            friend.remove()
             return jsonify({"success": True})
-    return jsonify({"error": "Same User ID %r when trying to send friend request, accept friend request, or remove friends." % user_id})
+    else:
+        logging.debug("Adding friend request...")
+        friend = Friend(user_id, friend_user_id)
+        friend.addAndCommit()
+        return jsonify({"success": True})
 
 @main.route('/logout', methods=['POST'])
 @authenticated_only_http
 def logout():
     cred = json.loads(request.data)    
-    if cred is not None:
-        username, user_id, session = cred.get('username'), cred.get('user_id'), cred.get('session')
-        if username is not None and user_id is not None and session is not None:
-            user = User.query.get(user_id)
-            if user is not None:
-                logging.info("%s has logged out." % user)
-                user.remove_session(session, UserSession)
-                return jsonify({"logged out": True})
-    return jsonify({"logged out": False})
+    if cred is None:
+        return jsonify({"success": False, "error": "Unable to fetch JSON input."})
+    
+    username, user_id, session = cred.get('username'), cred.get('user_id'), cred.get('session')
+    
+    # user_id is authenticated.
+    if not username or not session:
+        return jsonify({"success": False, "error": "Username and session must be non-empty strings."})
+    
+    user = User.query.get(user_id)
+    user.remove_session(session, UserSession)
+    
+    logging.info("%s has logged out." % user)
+    return jsonify({"success": True})
 
 @app.errorhandler(404)
 def page_not_found(e):

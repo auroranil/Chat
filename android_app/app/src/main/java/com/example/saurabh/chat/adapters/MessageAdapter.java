@@ -54,9 +54,15 @@ public class MessageAdapter extends BaseAdapter {
         this.username = username;
     }
 
-    public void addItem(final Object item) {
+    public int addItem(final Object item) {
         mArrayList.add(item);
         notifyDataSetChanged();
+        return mArrayList.size() - 1;
+    }
+
+    public int moveItemToEndOfList(int index) {
+        mArrayList.add(mArrayList.remove(index));
+        return mArrayList.size() - 1;
     }
 
     public void addItems(final ArrayList<Object> items) {
@@ -150,14 +156,14 @@ public class MessageAdapter extends BaseAdapter {
                 messageViewHolder.message.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        AlertDialog.Builder messageChoice = new AlertDialog.Builder(context);
+                        final AlertDialog.Builder messageChoice = new AlertDialog.Builder(context);
 
                         messageChoice
                                 .setTitle("Message options")
                                 .setItems(R.array.message_dialog_choice_list, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        switch(which) {
+                                        switch (which) {
                                             case MSG_MENU_COPY_TEXT:
                                                 ClipboardManager clipMan = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                                                 ClipData clip = ClipData.newPlainText("chat message", messageViewHolder.messageText.getText().toString());
@@ -175,12 +181,16 @@ public class MessageAdapter extends BaseAdapter {
                                                 messageStr.append(msg_item.getUsername());
                                                 messageStr.append("\n");
                                                 messageStr.append("Sent: ");
-                                                messageStr.append(
-                                                        new SimpleDateFormat("d MMMM yyyy h:mm a")
-                                                                .format(Utility.parseDateAsUTC(msg_item.getDateTimeUTC()))
-                                                                .replace("AM", "am")
-                                                                .replace("PM", "pm")
-                                                );
+                                                if(msg_item.on_server) {
+                                                    messageStr.append(
+                                                            new SimpleDateFormat("d MMMM yyyy h:mm a")
+                                                                    .format(Utility.parseDateAsUTC(msg_item.getDateTimeUTC()))
+                                                                    .replace("AM", "am")
+                                                                    .replace("PM", "pm")
+                                                    );
+                                                } else {
+                                                    messageStr.append("Sending...");
+                                                }
 
                                                 detailsDialog
                                                         .setTitle("Message details")
@@ -203,16 +213,6 @@ public class MessageAdapter extends BaseAdapter {
                     }
                 });
 
-                StringBuilder details = new StringBuilder();
-
-                if(!username.equals(msg_item.getUsername())) {
-                    details.append(msg_item.getUsername());
-                    details.append(" - ");
-                }
-
-                details.append(Utility.getAbbreviatedDateTime(Utility.parseDateAsUTC(msg_item.getDateTimeUTC())));
-
-                messageViewHolder.detailsText.setText(details.toString());
                 messageViewHolder.messageText.setText(msg_item.getMessage());
                 // add all links if message contains them
                 Linkify.addLinks(messageViewHolder.messageText, Linkify.ALL);
@@ -237,9 +237,25 @@ public class MessageAdapter extends BaseAdapter {
                     }
                 }
 
+                StringBuilder details = new StringBuilder();
+
+                if(!username.equals(msg_item.getUsername())) {
+                    details.append(msg_item.getUsername());
+                    details.append(" - ");
+                }
+
+                if(msg_item.on_server) {
+                    details.append(Utility.getAbbreviatedDateTime(Utility.parseDateAsUTC(msg_item.getDateTimeUTC())));
+                }
+
+                messageViewHolder.detailsText.setText(details.toString());
+
                 messageViewHolder.detailsText.setVisibility(View.VISIBLE);
 
-                if(position + 1 < mArrayList.size()) {
+                if(!msg_item.on_server) {
+                    messageViewHolder.detailsText.setText("Sending");
+                }
+                else if(position + 1 < mArrayList.size()) {
                     Object next_msg_item = getItem(position + 1);
                     if (next_msg_item instanceof MessageItem) {
                         if (msg_item.getUsername().equals(((MessageItem) next_msg_item).getUsername())) {
@@ -257,18 +273,27 @@ public class MessageAdapter extends BaseAdapter {
     }
 
     public static class MessageItem {
-        private final int id;
+        private int id;
         private final int user_id;
         private final String username;
         private final String message;
-        private final String datetime_utc;
+        private String datetime_utc;
+        private boolean on_server;
 
         public MessageItem(int id, int user_id, String username, String message, String datetime_utc) {
+            this.on_server = true;
             this.id = id;
             this.user_id = user_id;
             this.username = username;
             this.message = message;
             this.datetime_utc = datetime_utc;
+        }
+
+        public MessageItem(int user_id, String username, String message) {
+            this.on_server = false;
+            this.user_id = user_id;
+            this.username = username;
+            this.message = message;
         }
 
         public int getID() {
@@ -289,6 +314,12 @@ public class MessageAdapter extends BaseAdapter {
 
         public String getDateTimeUTC() {
             return datetime_utc;
+        }
+
+        public void savedToServer(int id, String datetime_utc) {
+            this.on_server = true;
+            this.id = id;
+            this.datetime_utc = datetime_utc;
         }
 
         @Override

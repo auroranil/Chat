@@ -97,6 +97,8 @@ public class Utility {
         final long diff = now - time;
         if (diff < MINUTE_MILLIS) {
             return "Now";
+        } else if(diff < 2 * MINUTE_MILLIS) {
+            return "1 min";
         } else if (diff < 50 * MINUTE_MILLIS) {
             return diff / MINUTE_MILLIS + " mins";
         } else if (diff < DAY_MILLIS) {
