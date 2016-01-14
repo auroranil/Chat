@@ -1,5 +1,6 @@
 package com.example.saurabh.chat.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -81,7 +83,14 @@ public class ChatActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
-            actionBar.setTitle("Room: " + room_name);
+            // Remove "Chat" placeholder
+            actionBar.setTitle("");
+            
+            actionBar.setDisplayShowCustomEnabled(true);
+            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View v = inflater.inflate(R.layout.actionbar_chat, null);
+            ((TextView) v.findViewById(R.id.textView_actionBar_title)).setText(room_name);
+            actionBar.setCustomView(v);
         }
 
         try {
