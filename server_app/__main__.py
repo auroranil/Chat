@@ -4,12 +4,17 @@ import logging
 import time
 import argparse
 import atexit
+import signal
 
 def check_directory():
     if not os.path.exists(os.path.expanduser("~/.chatserver")):
         os.makedirs(os.path.expanduser("~/.chatserver"))
     sys.path.append(os.path.expanduser("~/.chatserver"))
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+def graceful_exit(signal, frame):
+    logging.info("Process sent SIGTERM, shutting down.")
+    sys.exit(0)
 
 def daemonize():
     if os.path.exists(os.path.expanduser("~/.chatserver/pid")):
@@ -59,6 +64,12 @@ def daemonize():
         pidfile.close()
     except:
         sys.stderr.write("[FATAL] pid file writing failed. Try running with the --no-daemon option.\n")
+    
+    try:
+        signal.signal(signal.SIGTERM, graceful_exit)
+    except Exception, e:
+        sys.stderr.write("[FATAL] Failed to register termination signal handler.\nTraceback:\n%s\n" %str(e))
+        sys.exit(1)
         
     sys.stdout.write("[INFO] Now running server on daemon mode.\n")
     sys.stdout.write("[INFO] Kill server by running 'sh server_app/stop_daemon_server.sh'\n")
