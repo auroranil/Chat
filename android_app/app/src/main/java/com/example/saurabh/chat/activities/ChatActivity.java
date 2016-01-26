@@ -75,7 +75,6 @@ public class ChatActivity extends AppCompatActivity {
         User user = chatApplication.getUser();
         user_id = user.getUserID();
         username = user.getUsername();
-        String session = user.getSession();
         String room_name = intent.getStringExtra("room_name");
         // TODO: deal with default value
         int room_id = intent.getIntExtra("room_id", -1);
@@ -101,11 +100,8 @@ public class ChatActivity extends AppCompatActivity {
 
         mSocket.connect();
 
-        info = new JSONObject();
+        info = user.serializeToJSON();
         try {
-            info.put("user_id", user_id);
-            info.put("username", username);
-            info.put("session", session);
             info.put("room_name", room_name);
             info.put("room_id", room_id);
             info.put("type", ROOM);

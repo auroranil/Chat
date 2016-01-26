@@ -170,7 +170,7 @@ def fetch_friends():
             "date": str(friend.created_date)
         })
 
-    return jsonify({"friends": friends})
+    return jsonify({"success": True, "friends": friends})
 
 @main.route('/user/<other_user_id>', methods=['POST'])
 @authenticated_only_http

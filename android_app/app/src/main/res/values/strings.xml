@@ -37,6 +37,7 @@
     <string name="error">Error</string>
     
     <string name="send_friend_req">Add friend</string>
+    <string name="sending_friend_req">Adding&#8230;</string>
     <string name="cancel_friend_req">Cancel friend request</string>
     <string name="accept_friend_req">Accept friend request</string>
     <string name="remove_friend">Remove friend</string>

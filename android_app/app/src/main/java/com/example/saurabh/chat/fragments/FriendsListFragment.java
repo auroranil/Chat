@@ -46,7 +46,7 @@ public class FriendsListFragment extends Fragment {
             }
         });
 
-        friendsAdapter = new FriendsAdapter(getActivity());
+        friendsAdapter = new FriendsAdapter(this);
         friendsListView.setAdapter(friendsAdapter);
 
         swipeContainer = (SwipeRefreshLayout) v.findViewById(R.id.swipeContainer);
@@ -71,6 +71,10 @@ public class FriendsListFragment extends Fragment {
         swipeContainer.setVisibility(View.GONE);
 
         return v;
+    }
+
+    public void refresh() {
+        (new FetchFriendsAsyncTask(FriendsListFragment.this, username, user_id, session)).execute();
     }
 
     public FriendsAdapter getAdapter() {

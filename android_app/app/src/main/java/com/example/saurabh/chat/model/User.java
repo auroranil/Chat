@@ -3,6 +3,9 @@ package com.example.saurabh.chat.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by saurabh on 7/01/16.
  */
@@ -54,6 +57,20 @@ public class User implements Parcelable {
 
     public boolean isLoggedIn() {
         return user_id > -1 && username != null && session != null;
+    }
+
+    public JSONObject serializeToJSON() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("user_id", user_id);
+            jsonObject.put("username", username);
+            jsonObject.put("session", session);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class ChatApplication extends Application {
     }
 
     public User getUser() {
-        return  user;
+        return user;
     }
 
     public void setUser(User user) {
