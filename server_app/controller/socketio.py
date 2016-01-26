@@ -26,27 +26,60 @@ def authenticated_only_socketio(f):
         
         return f(*args, **kwargs)
     return wrapped
-    
+   
+def get_friend_conversation_string_id(u_id, v_id):
+    return "friend-" + "-".join(map(str, sorted([u_id, v_id])))
+ 
 @socketio.on('join')
 @authenticated_only_socketio
 def connected(data):
+    user_id = data.get("user_id")
     username = data.get("username")
-    room_name = data.get("room_name")
-    room_id = data.get('room_id')
-    if Room.query.get(room_id) is None:
-        emit("error", "Room '%s' does not exist" % room_name)
-        disconnect()
+    chat_type = data.get("type")
+    
+    room_name = ""
+    
+    if chat_type == 0:
+        room_display_name = data.get("room_name")
+        room_id = data.get('room_id')
+        
+        if Room.query.get(room_id) is None:
+            emit("error", "Room '%s' does not exist" % room_name)
+            disconnect()
+        else:
+            join_room("room-" + str(room_id))
+            logging.info(username + " has entered room '%s' (id=%r)." % (room_display_name, room_id))
+    elif chat_type == 1:
+        friend_username = data.get("friend_username")
+        friend_user_id = data.get("friend_user_id")
+        
+        if User.query.get(friend_user_id) is None:
+            emit("error", "Username %r with id %r does not exist." % (friend_username, friend_user_id))
+            disconnect()
+        else:
+            join_room(get_friend_conversation_string_id(user_id, friend_user_id))
+            logging.info("%r (id=%r) has entered a friend conservation with %r (id=%r)" % (username, user_id, friend_username, friend_user_id))
     else:
-        join_room("room" + str(room_id))
-        logging.info(username + " has entered room '%s' (id=%r)." % (room_name, room_id))
+        emit("error", "Must specify 'type' to be either 0 or 1.")
+        disconnect()
 
 @socketio.on('leave')
 @authenticated_only_socketio
 def disconnected(data):
-    stopped_typing_handler(data.get("username"), data.get("room_id"))
-    username, room_name, room_id = data.get('username'), data.get('room_name'), data.get('room_id')
-    leave_room("room" + str(room_id))
-    logging.info(username + " has left room '%s' (id=%r)." % (room_name, room_id))
+    room_name = ""
+    
+    chat_type = data.get("type")
+    
+    if chat_type == 0:
+        room_name = "room-" + str(data.get('room_id'))
+    elif chat_type == 1:
+        room_name = get_friend_conversation_string_id(data.get('user_id'), data.get('friend_user_id'))
+
+    stopped_typing_handler(data.get("username"), room_name)
+    leave_room(room_name)
+    
+    username, room_display_name, room_id = data.get('username'), data.get('room_name'), data.get('room_id')
+    logging.info(username + " has left room '%s' (id=%r)." % (room_display_name, room_id))
 
 @socketio.on('fetch messages')
 @authenticated_only_socketio
@@ -55,8 +88,17 @@ def fetch_messages(data):
     global Message, Room, User
     messages = []
     
-    room_id = data.get('room_id')
-    db_msg_list = Message.fetch(int(data.get('type')), room_id, int(data.get('before_msg_id', -1)))
+    chat_type = data.get('type')
+
+    user_id = data.get('user_id')
+
+    other_id = -1    
+    if chat_type == 0:
+        other_id = data.get('room_id')
+    elif chat_type == 1:
+        other_id = data.get('friend_user_id')
+    
+    db_msg_list = Message.fetch(chat_type, user_id, other_id, int(data.get('before_msg_id', -1)))
     
     for message in db_msg_list:
         messages.append(message.serialize(User))
@@ -69,15 +111,32 @@ def fetch_messages(data):
 @socketio.on('typing')
 @authenticated_only_socketio
 def started_typing(data):
-    emit("typing", data.get('username'), room="room" + str(data.get('room_id')), include_self=False)
+    chat_type = data.get('type')
+    room_name = ""
+    
+    if chat_type == 0:
+        room_name = "room-" + str(data.get('room_id'))
+    elif chat_type == 1:
+        room_name = get_friend_conversation_string_id(data.get('user_id'), data.get('friend_user_id'))
+    
+    emit("typing", data.get('username'), room=room_name, include_self=False)
 
 @socketio.on('stop typing')
 @authenticated_only_socketio
 def stopped_typing(data):
-    stopped_typing_handler(data.get("username"), data.get("room_id"))
+    room_name = ""
     
-def stopped_typing_handler(username, room_id):
-    emit("stop typing", username, room="room" + str(room_id), include_self=False)
+    chat_type = data.get('type')
+    
+    if chat_type == 0:
+        room_name = "room-" + str(data.get('room_id'))
+    elif chat_type == 1:
+        room_name = get_friend_conversation_string_id(data.get('user_id'), data.get('friend_user_id'))
+
+    stopped_typing_handler(data.get("username"), room_name)
+    
+def stopped_typing_handler(username, room_name):
+    emit("stop typing", username, room=room_name, include_self=False)
 
 @socketio.on('send message')
 @authenticated_only_socketio
@@ -88,8 +147,21 @@ def handle_sent_message(data):
     if not data.get('message'):
         return
     
-    message = Message(data.get('user_id'), data.get('message').strip(), data.get('type'), data.get('room_id'))
+    chat_type = data.get('type')
+    other_id = -1
+    if chat_type == 0:
+        other_id = data.get('room_id')
+    elif chat_type == 1:
+        other_id = data.get('friend_user_id')
+    message = Message(data.get('user_id'), data.get('message').strip(), data.get('type'), other_id)
     message.commit()
     
-    emit("received message", message.serialize(User), room="room" + str(data.get('room_id')))
+    room_name = ""
+    
+    if chat_type == 0:
+        room_name = "room-" + str(data.get('room_id'))
+    elif chat_type == 1:
+        room_name = get_friend_conversation_string_id(data.get('user_id'), data.get('friend_user_id'))
+    
+    emit("received message", message.serialize(User), room=room_name)
 

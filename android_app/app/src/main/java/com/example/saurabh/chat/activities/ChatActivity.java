@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,7 +41,7 @@ import java.util.ArrayList;
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "activities/ChatActivity";
 
-    private static final int ROOM = 0, FRIEND = 1;
+    public static final int ROOM = 0, FRIEND = 1;
     private ListView listViewMessages;
     private MessageAdapter adapter;
     private EditText txtMessage;
@@ -61,6 +62,8 @@ public class ChatActivity extends AppCompatActivity {
     // sent to the server.
     private ArrayList<Integer> not_on_server_indices = new ArrayList<>();
 
+    int type;
+
     int user_id;
     String username;
 
@@ -75,9 +78,16 @@ public class ChatActivity extends AppCompatActivity {
         User user = chatApplication.getUser();
         user_id = user.getUserID();
         username = user.getUsername();
-        String room_name = intent.getStringExtra("room_name");
         // TODO: deal with default value
+        type = intent.getIntExtra("type", -1);
+
+        // will only be used when type == ROOM
+        String room_name = intent.getStringExtra("room_name");
         int room_id = intent.getIntExtra("room_id", -1);
+
+        // will only be used when type == FRIEND
+        String friend_username = intent.getStringExtra("friend_username");
+        int friend_user_id = intent.getIntExtra("friend_user_id", -1);
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -88,7 +98,15 @@ public class ChatActivity extends AppCompatActivity {
             actionBar.setDisplayShowCustomEnabled(true);
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View v = inflater.inflate(R.layout.actionbar_chat, null);
-            ((TextView) v.findViewById(R.id.textView_actionBar_title)).setText(room_name);
+
+            if(type == ROOM) {
+                ((TextView) v.findViewById(R.id.textView_actionBar_title)).setText(room_name);
+                ((ImageView) v.findViewById(R.id.imageView_actionBar_icon)).setImageResource(R.mipmap.ic_room_white);
+            } else if(type == FRIEND) {
+                ((TextView) v.findViewById(R.id.textView_actionBar_title)).setText(friend_username);
+                ((ImageView) v.findViewById(R.id.imageView_actionBar_icon)).setImageResource(R.mipmap.ic_user_white);
+            }
+
             actionBar.setCustomView(v);
         }
 
@@ -102,9 +120,16 @@ public class ChatActivity extends AppCompatActivity {
 
         info = user.serializeToJSON();
         try {
-            info.put("room_name", room_name);
-            info.put("room_id", room_id);
-            info.put("type", ROOM);
+            info.put("type", type);
+
+            if(type == ROOM) {
+                info.put("room_name", room_name);
+                info.put("room_id", room_id);
+            } else if(type == FRIEND) {
+                Log.i(TAG, "friend_username=" + friend_username);
+                info.put("friend_username", friend_username);
+                info.put("friend_user_id", friend_user_id);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -240,6 +265,8 @@ public class ChatActivity extends AppCompatActivity {
         mSocket.off("history", onHistory);
         mSocket.off("typing", onTyping);
         mSocket.off("stop typing", onStopTyping);
+
+        Log.i(TAG, "Destroying...");
 
         super.onDestroy();
     }

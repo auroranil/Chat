@@ -160,10 +160,12 @@ public class FriendsAdapter extends BaseAdapter implements AdapterView.OnItemCli
 
     public static class FriendItem {
         private final String username, date;
+        private final int user_id;
 
-        public FriendItem(String username, String date) {
+        public FriendItem(String username, int user_id, String date) {
             this.username = username;
             this.date = date;
+            this.user_id = user_id;
         }
 
         public String getUsername() {
@@ -171,7 +173,9 @@ public class FriendsAdapter extends BaseAdapter implements AdapterView.OnItemCli
         }
         public String getDate() {
             return date;
+
         }
+        public int getUserID() { return user_id; }
     }
 
     public static class FriendRequestItem {

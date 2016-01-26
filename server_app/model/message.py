@@ -1,6 +1,7 @@
 from app import db
 
 import datetime
+import sqlalchemy
 
 class Message(db.Model):
     __tablename__ = 'messages'
@@ -27,8 +28,26 @@ class Message(db.Model):
         return '<Message(user_id=%r, message=%r, type=%r, other_id=%r)>' % (self.user_id, self.message, self.type, self.other_id)
         
     @classmethod
-    def fetch(cls, type_num, other_id, before_id):
-        result = cls.query.order_by(cls.id.desc()).filter_by(other_id=other_id, type=type_num)
+    def fetch(cls, type_num, user_id, other_id, before_id):
+        result = None
+        if type_num == 0:
+            result = cls.query.order_by(cls.id.desc()).filter_by(other_id=other_id, type=type_num)
+        elif type_num == 1:
+            result = cls.query.order_by(cls.id.desc()).filter(
+                sqlalchemy.and_(
+                    cls.type == type_num,
+                    sqlalchemy.or_(
+                        sqlalchemy.and_(
+                            cls.user_id == user_id,
+                            cls.other_id == other_id
+                        ), 
+                        sqlalchemy.and_(
+                            cls.user_id == other_id,
+                            cls.other_id == user_id
+                        )
+                    )
+                )
+            )
         
         if not before_id < 0:
             result = result.filter(cls.id < before_id)

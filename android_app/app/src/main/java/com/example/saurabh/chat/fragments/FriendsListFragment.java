@@ -1,5 +1,6 @@
 package com.example.saurabh.chat.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -8,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.saurabh.chat.R;
+import com.example.saurabh.chat.activities.ChatActivity;
 import com.example.saurabh.chat.adapters.FriendsAdapter;
 import com.example.saurabh.chat.layouts.StatusLayout;
 import com.example.saurabh.chat.network.FetchFriendsAsyncTask;
@@ -42,7 +43,14 @@ public class FriendsListFragment extends Fragment {
         friendsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "Clicked!", Toast.LENGTH_SHORT).show();
+                if(friendsAdapter.getItem(position) instanceof FriendsAdapter.FriendItem) {
+                    FriendsAdapter.FriendItem friendItem = ((FriendsAdapter.FriendItem) friendsAdapter.getItem(position));
+                    Intent intent = new Intent(getActivity(), ChatActivity.class);
+                    intent.putExtra("friend_username", friendItem.getUsername());
+                    intent.putExtra("friend_user_id", friendItem.getUserID());
+                    intent.putExtra("type", ChatActivity.FRIEND);
+                    getActivity().startActivity(intent);
+                }
             }
         });
 

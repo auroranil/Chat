@@ -50,6 +50,7 @@ public class RoomsFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), ChatActivity.class);
                 intent.putExtra("room_id", ((RoomAdapter.RoomItem) adapter.getItem(position)).getRoomID());
                 intent.putExtra("room_name", ((RoomAdapter.RoomItem) adapter.getItem(position)).getRoomName());
+                intent.putExtra("type", ChatActivity.ROOM);
                 getActivity().startActivity(intent);
             }
         });

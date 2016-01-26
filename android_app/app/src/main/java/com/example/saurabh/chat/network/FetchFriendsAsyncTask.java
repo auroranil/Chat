@@ -52,7 +52,9 @@ public class FetchFriendsAsyncTask extends AsyncTask<String, String, ArrayList<O
                 if(!friend.getBoolean("request")) {
                     FriendsAdapter.FriendItem item = new FriendsAdapter.FriendItem(
                             friend.getString("username"),
-                            friend.getString("date"));
+                            friend.getInt("user_id"),
+                            friend.getString("date")
+                    );
 
                     friends.add(item);
                 } else {

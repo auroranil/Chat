@@ -56,7 +56,8 @@ Once Chat server is running, Chat client is accessible via a web browser by head
   * User profile (username, joined date, last active date, is online)
 * Friends
   * Ability to add (via requests) and remove friends
-  * Display friends in a list
+  * Display friends (and friend requests) in a list
+  * Private message chat to a friend
 * Server can run in daemon mode.
 
 ## TODO:
@@ -67,8 +68,8 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 * Refine UI constantly
 
 ### Friends
-* Show friend requests within the same listview
-* Private message chat to a single friend
+* In friends listview, make ignore request button work
+* In friends listview, add menu features
 * Block list
 * Ordering
 * Able to search a friend
