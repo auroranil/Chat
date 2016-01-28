@@ -70,6 +70,7 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 ### Friends
 * In friends listview, make ignore request button work
 * In friends listview, add menu features
+* When a friend is removed, manage their conversations (currently its left alone in the database but inaccessible in the client app)
 * Block list
 * Ordering
 * Able to search a friend

@@ -28,7 +28,7 @@ class Message(db.Model):
         return '<Message(user_id=%r, message=%r, type=%r, other_id=%r)>' % (self.user_id, self.message, self.type, self.other_id)
         
     @classmethod
-    def fetch(cls, type_num, user_id, other_id, before_id):
+    def fetch(cls, type_num, user_id, other_id, before_id, after_id):
         result = None
         if type_num == 0:
             result = cls.query.order_by(cls.id.desc()).filter_by(other_id=other_id, type=type_num)
@@ -49,8 +49,12 @@ class Message(db.Model):
                 )
             )
         
-        if not before_id < 0:
-            result = result.filter(cls.id < before_id)
+        if not before_id < 0 and not after_id > 0:
+            result = result.filter(sqlalchemy.or_(cls.id < before_id, cls.id > after_id))
+        elif not before_id < 0:
+            result = result.filter(cls.id < before_id)    
+        elif not after_id < 0:
+            result = result.filter(cls.id > after_id)
             
         result = result.limit(25).all()
         

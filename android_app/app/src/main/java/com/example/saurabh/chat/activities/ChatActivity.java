@@ -36,6 +36,8 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -50,7 +52,7 @@ public class ChatActivity extends AppCompatActivity {
     private TextView isTypingTextView;
     private boolean typing = false;
     private boolean first_history = true;
-    private boolean history_lock = false;
+    private boolean first_message_history_lock = false;
 
     private final ArrayList<String> usersTyping = new ArrayList<>();
     private Resources res;
@@ -66,6 +68,8 @@ public class ChatActivity extends AppCompatActivity {
 
     int user_id;
     String username;
+
+    HashMap<String, Emitter.Listener> eventListeners = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,15 +138,17 @@ public class ChatActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mSocket.on("received message", onMessageReceive);
-        mSocket.on("broadcast", onBroadcast);
-        mSocket.on("history", onHistory);
-        mSocket.on("typing", onTyping);
-        mSocket.on("stop typing", onStopTyping);
+        eventListeners.put("received message", onMessageReceive);
+        eventListeners.put("broadcast", onBroadcast);
+        eventListeners.put("history", onHistory);
+        eventListeners.put("typing", onTyping);
+        eventListeners.put("stop typing", onStopTyping);
+
+        setListeningToEvents(true);
 
         mSocket.emit("join", info);
         mSocket.emit("fetch messages", info);
-        history_lock = true;
+        first_message_history_lock = true;
 
         listViewMessages = (ListView) findViewById(R.id.listView_messages);
         txtMessage = (EditText) findViewById(R.id.txt_message);
@@ -175,15 +181,16 @@ public class ChatActivity extends AppCompatActivity {
                     int offset = (v == null) ? 0 : v.getTop();
                     if (offset < 2) {
                         // reached the top:
-                        Log.d("ChatActivity", "history_lock=" + history_lock);
-                        if (!history_lock) {
+                        Log.d("ChatActivity", "first_message_history_lock=" + first_message_history_lock);
+                        if (!first_message_history_lock) {
                             try {
                                 JSONObject json = new JSONObject(info.toString());
                                 if(adapter.getCount() > 0) {
                                     json.put("before_msg_id", adapter.getFirstID());
+                                    json.put("after_msg_id", adapter.getLastID());
                                 }
                                 mSocket.emit("fetch messages", json);
-                                history_lock = true;
+                                first_message_history_lock = true;
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -260,21 +267,26 @@ public class ChatActivity extends AppCompatActivity {
     public void onDestroy() {
         mSocket.emit("leave", info);
         mSocket.disconnect();
-        mSocket.off("received message", onMessageReceive);
-        mSocket.off("broadcast", onBroadcast);
-        mSocket.off("history", onHistory);
-        mSocket.off("typing", onTyping);
-        mSocket.off("stop typing", onStopTyping);
+        setListeningToEvents(false);
 
         Log.i(TAG, "Destroying...");
 
         super.onDestroy();
     }
 
+    private void setListeningToEvents(boolean start_listening) {
+        for(Map.Entry eventListener: eventListeners.entrySet()) {
+            if(start_listening) {
+                mSocket.on((String) eventListener.getKey(), (Emitter.Listener) eventListener.getValue());
+            } else {
+                mSocket.off((String) eventListener.getKey(), (Emitter.Listener) eventListener.getValue());
+            }
+        }
+    }
+
     private final Emitter.Listener onMessageReceive = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.i("message received", "a");
             JSONObject json;
             final int msg_user_id, message_id;
             final String msg_username, message_contents, datetimeutc;
@@ -395,39 +407,47 @@ public class ChatActivity extends AppCompatActivity {
 
             Log.i("ChatActivity", "receiving message history");
 
-            final ArrayList<Object> items = new ArrayList<>();
+            final ArrayList<Object> items_before = new ArrayList<>();
+            final ArrayList<Object> items_after = new ArrayList<>();
 
             try {
                 json = (JSONObject) args[0];
-                arr = json.getJSONArray("history");
-                Log.d("arr size", Integer.toString(arr.length()));
+                arr = json.getJSONArray("messages");
                 JSONObject jsonObject;
+                int messageID;
 
                 for (int i = 0; i < arr.length(); i++) {
-                    Log.i("Index", Integer.toString(i));
                     jsonObject = arr.getJSONObject(i);
 
-                    items.add(
-                            new MessageAdapter.MessageItem(
-                                    jsonObject.getInt("message_id"),
-                                    jsonObject.getInt("user_id"),
-                                    jsonObject.getString("username"),
-                                    jsonObject.getString("message"),
-                                    jsonObject.getString("datetimeutc")
-                            )
+                    MessageAdapter.MessageItem messageItem = new MessageAdapter.MessageItem(
+                            jsonObject.getInt("message_id"),
+                            jsonObject.getInt("user_id"),
+                            jsonObject.getString("username"),
+                            jsonObject.getString("message"),
+                            jsonObject.getString("datetimeutc")
                     );
+
+                    messageID = jsonObject.getInt("message_id");
+
+                    if(adapter.getCount() > 0) {
+                        if (messageID < adapter.getFirstID()) {
+                            items_before.add(messageItem);
+                        } else if (messageID > adapter.getLastID()) {
+                            items_after.add(messageItem);
+                        }
+                    } else {
+                        items_before.add(messageItem);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            Log.i("arr size", Integer.toString(items.size()));
-
             ChatActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if(first_history) {
-                        adapter.prependItems(items);
+                        adapter.prependItems(items_before);
                         first_history = false;
                     } else {
                         // https://stackoverflow.com/questions/22051556/maintain-scroll-position-when-adding-to-listview-with-reverse-endless-scrolling
@@ -439,14 +459,15 @@ public class ChatActivity extends AppCompatActivity {
                         int oldCount = adapter.getCount();
 
                         // notify dataset changed or re-assign adapter here
-                        adapter.prependItems(items);
+                        adapter.prependItems(items_before);
+                        adapter.addItems(items_after);
 
                         // restore the position of listview
                         listViewMessages.setSelectionFromTop(index + adapter.getCount() - oldCount, top);
                     }
 
-                    // if we haven't reached the start of the messages, release history lock
-                    if (items.size() > 0) history_lock = false;
+                    // if we haven't reached the start of the messages, release first message history lock
+                    if (items_before.size() > 0) first_message_history_lock = false;
 
 
                 }

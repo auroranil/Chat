@@ -70,8 +70,16 @@ public class MessageAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    // TODO: fix for broadcastItem
     public int getFirstID() {
+        if(getCount() == 0) return -1;
         return ((MessageItem) mArrayList.get(0)).getID();
+    }
+
+    // TODO: fix for broadcastItem
+    public int getLastID() {
+        if(getCount() == 0) return -1;
+        return ((MessageItem) mArrayList.get(getCount() - 1)).getID();
     }
 
     public void prependItems(final ArrayList<Object> items) {

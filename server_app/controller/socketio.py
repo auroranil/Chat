@@ -98,13 +98,13 @@ def fetch_messages(data):
     elif chat_type == 1:
         other_id = data.get('friend_user_id')
     
-    db_msg_list = Message.fetch(chat_type, user_id, other_id, int(data.get('before_msg_id', -1)))
+    db_msg_list = Message.fetch(chat_type, user_id, other_id, data.get('before_msg_id', -1), data.get('after_msg_id', -1))
     
     for message in db_msg_list:
         messages.append(message.serialize(User))
     
     messages.reverse()
-    history = {"history": messages}
+    history = {"messages": messages}
     
     emit("history", history)
 
