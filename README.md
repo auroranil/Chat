@@ -52,6 +52,7 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 * Rooms
   * Public rooms (displays a list of rooms to join, and a edittext and button to host a room)
   * Display rooms in a list
+  * Shows list even if you cannot connect to the server (if you choose to be remembered)
 * User
   * User profile (username, joined date, last active date, is online)
 * Friends
@@ -81,7 +82,6 @@ Once Chat server is running, Chat client is accessible via a web browser by head
 
 ### Caching 
 * Messages
-* Rooms
 * Friends
 
 ### Communication

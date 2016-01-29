@@ -11,6 +11,8 @@ public class ChatApplication extends Application {
     private static final String TAG = "ChatApplication";
     private String url;
 
+    private boolean remember_me = false;
+
     private SharedPreferences sharedPreferences;
 
     private User user;
@@ -28,6 +30,9 @@ public class ChatApplication extends Application {
                 sharedPreferences.getString("username", null),
                 sharedPreferences.getString("session", null)
         );
+
+        // if the user is already logged in, then the user has chosen to remember the credentials.
+        remember_me = isLoggedIn();
     }
 
     public String getURL() {
@@ -64,6 +69,8 @@ public class ChatApplication extends Application {
                 .putInt("user_id", user.getUserID())
                 .putString("username", user.getUsername())
                 .putString("session", user.getSession()).apply();
+
+        remember_me = true;
     }
 
     public void forgetCredentials() {
@@ -72,5 +79,13 @@ public class ChatApplication extends Application {
 
         url = null;
         user = null;
+
+        deleteFile("rooms.json");
+
+        remember_me = false;
+    }
+
+    public boolean isRemembered() {
+        return remember_me;
     }
 }

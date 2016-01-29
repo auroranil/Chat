@@ -40,6 +40,8 @@ public class MenuActivity extends AppCompatActivity {
     private int user_id = -1;
     Fragment roomsFragment, friendsListFragment;
     private Intent intent;
+    public CoordinatorLayout coordinatorLayout;
+    ChatApplication chatApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class MenuActivity extends AppCompatActivity {
 
         intent = getIntent();
 
-        ChatApplication chatApplication = (ChatApplication) MenuActivity.this.getApplication();
+        chatApplication = (ChatApplication) MenuActivity.this.getApplication();
         User user = chatApplication.getUser();
         username = user.getUsername();
         user_id = user.getUserID();
@@ -64,6 +66,7 @@ public class MenuActivity extends AppCompatActivity {
         friendsListFragment.setArguments(fragmentArguments);
 
         CollectionPagerAdapter mCollectionPagerAdapter = new CollectionPagerAdapter(getSupportFragmentManager());
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout_menu);
 
         ViewPager mViewPager = (ViewPager) findViewById(R.id.pager_menu);
         mViewPager.setAdapter(mCollectionPagerAdapter);
@@ -72,18 +75,14 @@ public class MenuActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         if(chatApplication.isLoggedIn() && intent.getBooleanExtra("returning user", false)) {
-            CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout_menu);
 
-            Snackbar snackbar = Snackbar
-                    .make(coordinatorLayout, "Signed in as " + username, Snackbar.LENGTH_LONG)
+            Snackbar.make(coordinatorLayout, "Signed in as " + username, Snackbar.LENGTH_LONG)
                     .setAction("Not you?", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             new Logout(MenuActivity.this, user_id, username, session);
                         }
-                    });
-
-            snackbar.show();
+                    }).show();
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -174,6 +173,10 @@ public class MenuActivity extends AppCompatActivity {
         });
 
         createRoomDialog.show();
+    }
+
+    public void unableToConnectSnackBar() {
+        Snackbar.make(coordinatorLayout, "Unable to connect to server", Snackbar.LENGTH_LONG).show();
     }
 
     class CollectionPagerAdapter extends FragmentPagerAdapter {

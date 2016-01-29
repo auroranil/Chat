@@ -17,6 +17,7 @@ import com.example.saurabh.chat.layouts.StatusLayout;
 import com.example.saurabh.chat.network.FetchRoomsAsyncTask;
 
 public class RoomsFragment extends Fragment {
+    private static final String TAG = "fragments/RoomsFragment";
 
     public ListView listRooms;
     public SwipeRefreshLayout swipeContainer;
@@ -71,20 +72,13 @@ public class RoomsFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        swipeContainer.post(new Runnable() {
-            @Override
-            public void run() {
-                swipeContainer.setRefreshing(true);
-            }
-        });
-
         return view;
     }
 
-    // Fetch rooms when activity is created
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         (new FetchRoomsAsyncTask(this, username, user_id, session)).execute();
         swipeContainer.setVisibility(View.GONE);
         statusLayout.setLoading();
