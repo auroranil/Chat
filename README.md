@@ -5,13 +5,13 @@ A simple chat application for android with a python flask server as the backend.
 ### Chat server: Ubuntu (quick and easy)
 Run this command to clone the repository, install dependencies, and get the Chat server up and running in daemon mode.
 ```
-curl https://raw.githubusercontent.com/jos0003/Chat/master/setup_server.sh | sh
+curl https://raw.githubusercontent.com/auroranil/Chat/master/setup_server.sh | sh
 ```
 
 ### Chat server: All operating systems (more challenging)
 * Clone the repository
 ```
-git clone https://github.com/jos0003/Chat
+git clone https://github.com/auroranil/Chat
 ```
 * Install these following dependencies:
   * python
