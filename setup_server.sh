@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo Running "git clone https://github.com/jos0003/Chat.git"
-git clone https://github.com/jos0003/Chat.git
+echo Running "git clone https://github.com/auroranil/Chat.git"
+git clone https://github.com/auroranil/Chat.git
 echo Running "cd Chat"
 cd Chat
 
